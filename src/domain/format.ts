@@ -1,13 +1,28 @@
 // Formatos de la interfaz en español rioplatense (es-AR): coma decimal y fechas dd/mm/aaaa.
 
 import type { LoadResult } from './load.ts'
-import type { LocalDate } from './types.ts'
+import type { LocalDate, RoundingIncrement } from './types.ts'
 
 const numberFormat = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })
 
 /** Número con coma decimal y hasta dos decimales: 87.5 → "87,5", 85 → "85". */
 export function formatNumber(value: number): string {
   return numberFormat.format(value)
+}
+
+/**
+ * Número escrito por el usuario, con coma o punto decimal: "87,5" → 87.5.
+ * Cualquier otra cosa (por ejemplo "1O" con la letra O) da `undefined`: no se adivina.
+ */
+export function parseDecimal(text: string): number | undefined {
+  const trimmed = text.trim()
+  if (!/^\d+([.,]\d+)?$/.test(trimmed)) return undefined
+  return Number(trimmed.replace(',', '.'))
+}
+
+/** 1.25 → "1,25 kg"; 'exact' → "exacto". */
+export function formatIncrement(increment: RoundingIncrement): string {
+  return increment === 'exact' ? 'exacto' : formatKg(increment)
 }
 
 /** 87.5 → "87,5 kg". */

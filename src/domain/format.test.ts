@@ -1,5 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import { formatDate, formatKg, formatLoad, formatNumber, toLocalDate } from './format.ts'
+import {
+  formatDate,
+  formatIncrement,
+  formatKg,
+  formatLoad,
+  formatNumber,
+  parseDecimal,
+  toLocalDate,
+} from './format.ts'
 
 describe('formatNumber', () => {
   test.each([
@@ -9,6 +17,32 @@ describe('formatNumber', () => {
     [0, '0'],
   ])('%s se muestra como "%s"', (value, expected) => {
     expect(formatNumber(value)).toBe(expected)
+  })
+})
+
+describe('parseDecimal', () => {
+  test.each([
+    ['87,5', 87.5],
+    ['87.5', 87.5],
+    [' 100 ', 100],
+    ['82,45', 82.45],
+  ])('"%s" se lee como %s', (text, expected) => {
+    expect(parseDecimal(text)).toBe(expected)
+  })
+
+  test.each(['', 'abc', '1O', '1,2,3', '-5', '87,'])('"%s" no es un número válido', (text) => {
+    expect(parseDecimal(text)).toBeUndefined()
+  })
+})
+
+describe('formatIncrement', () => {
+  test.each([
+    [1.25, '1,25 kg'],
+    [2.5, '2,5 kg'],
+    [5, '5 kg'],
+    ['exact', 'exacto'],
+  ] as const)('%s se muestra como "%s"', (increment, expected) => {
+    expect(formatIncrement(increment)).toBe(expected)
   })
 })
 
