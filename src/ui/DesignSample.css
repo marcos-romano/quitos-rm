@@ -1,4 +1,9 @@
-/* Muestra de diseño temporal (paso 3): colores de acento y resplandor neón. */
+/* Muestra de diseño temporal (paso 3): variantes de azul con resplandor neón. */
+
+.ds {
+  --sample-green: var(--green);
+  --sample-red: var(--red);
+}
 
 .ds {
   display: flex;

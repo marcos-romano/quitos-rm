@@ -1,6 +1,6 @@
 # quitos_RM: guía de diseño
 
-Versión 1.1. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
+Versión 1.2. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
 
 ## 1. Principios
 
@@ -26,7 +26,9 @@ Versión 1.1. Es la fuente de verdad del diseño visual de la app. El fondo, el 
 
 Los valores de verde y rojo son los que se recuerdan como colores por defecto de TradingView. El azul es una propuesta intermedia entre el azul de Francia y el ultramar.
 
-**En revisión:** el usuario pidió verde y rojo un poco más luminosos, el azul un poco más apagado, y para los tres un efecto neón suave (referencia: la iluminación de "Tron: el legado", pero más sutil). Las variantes se comparan en la muestra de diseño de la versión 0.4.0. Al elegir, se actualizan esta tabla y la de contraste.
+Verde y rojo confirmados por el usuario en pantalla real (versión 0.4.0), con resplandor neón (sección 4).
+
+**Azul en revisión:** el usuario lo quiere más oscuro, entre el azul actual y el azul medianoche (`#191970`). Un azul más oscuro mejora el contraste del texto blanco sobre el botón principal, pero hace menos visibles las líneas finas azules sobre el fondo; el resplandor neón lo compensa. Las variantes se comparan en la muestra de la versión 0.5.0. Al elegir, se actualizan esta tabla y la de contraste.
 
 ### Contraste verificado (WCAG, calculado de forma independiente)
 
@@ -72,8 +74,12 @@ Reglas que se desprenden:
 - Unidad base de 4 px: 4, 8, 12, 16, 24, 32 y 48.
 - Margen lateral de pantalla: 16 px, más las áreas seguras del dispositivo.
 - Esquinas rectas (radio 0) en todo: botones, campos, rondas, diálogos y barras.
-- Bordes de 1 px con `--border`. Sin sombras: la elevación se expresa con el tono de la superficie.
-- Realce del elemento activo: borde azul de 1 px más un resplandor suave (`0 0 18px` azul al 25% de opacidad). Solo para la ronda activa y el botón principal enfocado.
+- Bordes de 1 px con `--border`. Sin sombras de elevación: la profundidad se expresa con el tono de la superficie.
+- **Resplandor neón** (elegido por el usuario): los elementos de color de acento (verde, rojo y azul) llevan una luz suave de su mismo color, en la línea de la iluminación de "Tron: el legado" pero más contenida.
+  - Rellenos y bordes de color: `0 0 10px` a `0 0 16px` del color al 25 a 45%.
+  - Texto de color: `0 0 8px` del color al 55%.
+  - Ronda activa: borde azul de 1 px, `0 0 14px` azul al 35% y un resplandor interior de 10 px al 12%.
+  - Los elementos neutros (texto blanco, bordes `--border`) no llevan resplandor.
 
 ## 5. Componentes
 
@@ -134,7 +140,7 @@ Reglas que se desprenden:
 
 ## 9. Ajustes pendientes
 
-- Elegir las variantes de verde, rojo y azul y el efecto neón (muestra de la versión 0.4.0).
+- Elegir el azul definitivo, más oscuro que el actual (muestra de la versión 0.5.0).
 - Formato del texto del botón del día: "Semana 3, Día 2" o "Semana 3 · Día 2".
 - Mostrar las fechas como dd/mm/aaaa aunque el iPhone esté en otro idioma.
 - Definir el ícono definitivo.

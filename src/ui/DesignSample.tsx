@@ -1,39 +1,16 @@
-// Muestra de diseño temporal (paso 3): variantes de verde, rojo y azul y un
-// resplandor neón suave, para elegir viéndolos en el iPhone.
+// Muestra de diseño temporal (paso 3): variantes de azul más oscuro, con el verde,
+// el rojo y el resplandor neón ya elegidos, para decidir viéndolos en el iPhone.
 
 import { useState, type CSSProperties } from 'react'
 import './DesignSample.css'
 
-type Accent = 'green' | 'red' | 'blue'
-
-const VARIANTS: Record<Accent, { name: string; options: { hex: string; label: string }[] }> = {
-  green: {
-    name: 'Verde',
-    options: [
-      { hex: '#089981', label: 'actual' },
-      { hex: '#0DB592', label: 'un poco más luminoso' },
-      { hex: '#12C9A0', label: 'un poco más todavía' },
-    ],
-  },
-  red: {
-    name: 'Rojo',
-    options: [
-      { hex: '#F23645', label: 'actual' },
-      { hex: '#FF3D52', label: 'un poco más luminoso' },
-      { hex: '#FF4F63', label: 'un poco más todavía' },
-    ],
-  },
-  blue: {
-    name: 'Azul',
-    options: [
-      { hex: '#2F5BFF', label: 'actual' },
-      { hex: '#3A5FE0', label: 'un poco más apagado' },
-      { hex: '#4466D6', label: 'más apagado' },
-    ],
-  },
-}
-
-const ACCENTS: Accent[] = ['green', 'red', 'blue']
+// Del azul actual hacia el azul medianoche (#191970).
+const BLUES = [
+  { hex: '#2F5BFF', label: 'actual, como referencia' },
+  { hex: '#2744CD', label: 'un poco más oscuro' },
+  { hex: '#243AB8', label: 'intermedio entre el actual y medianoche' },
+  { hex: '#2233A9', label: 'más cerca de medianoche' },
+]
 
 function CheckIcon() {
   return (
@@ -44,56 +21,33 @@ function CheckIcon() {
 }
 
 export function DesignSample() {
-  const [chosen, setChosen] = useState<Record<Accent, number>>({ green: 0, red: 0, blue: 0 })
-  const [neon, setNeon] = useState(true)
-
-  const colors = {
-    '--sample-green': VARIANTS.green.options[chosen.green].hex,
-    '--sample-red': VARIANTS.red.options[chosen.red].hex,
-    '--sample-blue': VARIANTS.blue.options[chosen.blue].hex,
-  } as CSSProperties
+  const [blue, setBlue] = useState(2)
 
   return (
-    <div className={neon ? 'ds ds-neon' : 'ds'} style={colors}>
+    <div className="ds ds-neon" style={{ '--sample-blue': BLUES[blue].hex } as CSSProperties}>
       <section className="ds-section">
-        <p className="ds-label">Colores y efecto neón</p>
+        <p className="ds-label">Azul más oscuro</p>
         <p className="ds-note">
-          Elegí una variante de cada color y prendé o apagá el resplandor. Abajo se ve cómo
-          quedan en la app.
+          Verde, rojo y resplandor neón ya están elegidos. Probá los azules y mirá sobre todo el
+          borde de la ronda activa y el botón principal.
         </p>
-
-        {ACCENTS.map((accent) => (
-          <div key={accent} className="ds-choice">
-            <p className="ds-body">
-              {VARIANTS[accent].name} {chosen[accent] + 1} · {VARIANTS[accent].options[chosen[accent]].label} ·{' '}
-              {VARIANTS[accent].options[chosen[accent]].hex}
-            </p>
-            <div className="ds-switch" role="group" aria-label={VARIANTS[accent].name}>
-              {VARIANTS[accent].options.map((option, index) => (
-                <button
-                  key={option.hex}
-                  type="button"
-                  aria-pressed={chosen[accent] === index}
-                  className="ds-switch-option"
-                  onClick={() => setChosen({ ...chosen, [accent]: index })}
-                >
-                  <span className="ds-swatch" style={{ backgroundColor: option.hex }} />
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-
         <div className="ds-choice">
-          <p className="ds-body">Resplandor neón</p>
-          <div className="ds-switch" role="group" aria-label="Resplandor neón">
-            <button type="button" aria-pressed={neon} className="ds-switch-option" onClick={() => setNeon(true)}>
-              Prendido
-            </button>
-            <button type="button" aria-pressed={!neon} className="ds-switch-option" onClick={() => setNeon(false)}>
-              Apagado
-            </button>
+          <p className="ds-body">
+            Azul {blue + 1} · {BLUES[blue].label} · {BLUES[blue].hex}
+          </p>
+          <div className="ds-switch" role="group" aria-label="Azul">
+            {BLUES.map((option, index) => (
+              <button
+                key={option.hex}
+                type="button"
+                aria-pressed={blue === index}
+                className="ds-switch-option"
+                onClick={() => setBlue(index)}
+              >
+                <span className="ds-swatch" style={{ backgroundColor: option.hex }} />
+                {index + 1}
+              </button>
+            ))}
           </div>
         </div>
       </section>
