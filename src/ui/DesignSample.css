@@ -1,8 +1,12 @@
-/* Muestra de diseño temporal (paso 3). Sin tarjetas y con esquinas rectas. */
+/* Muestra de diseño temporal (paso 3): colores de acento y resplandor neón. */
 
 .ds {
   display: flex;
   flex-direction: column;
+}
+
+.ds p {
+  margin: 0;
 }
 
 .ds-section {
@@ -13,107 +17,40 @@
   border-top: 1px solid var(--border);
 }
 
-.ds-heading {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.ds-note,
-.ds-variant {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-.ds-variant {
-  color: var(--text);
-}
-
-.ds-compare {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-/* Grosores: cada variante define el peso de lo grande y de lo chico. */
-.ds-weight-current {
-  --weight-large: 600;
-  --weight-small: 400;
-  --weight-label: 500;
-}
-
-.ds-weight-a {
-  --weight-large: 300;
-  --weight-small: 400;
-  --weight-label: 400;
-}
-
-.ds-weight-b {
-  --weight-large: 300;
-  --weight-small: 300;
-  --weight-label: 300;
-}
-
-.ds-weight-c {
-  --weight-large: 200;
-  --weight-small: 300;
-  --weight-label: 300;
-}
-
-.ds-weight p {
-  margin: 0;
-}
-
-.ds-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: var(--weight-large);
-}
-
-.ds-big {
-  margin: 0;
-  font-size: 40px;
-  line-height: 1.1;
-  font-weight: var(--weight-large);
-}
-
-.ds-number {
-  font-size: 20px;
-  font-weight: var(--weight-large);
-}
-
-.ds-body {
-  margin: 0;
-  font-size: 16px;
-  font-weight: var(--weight-small);
-}
-
-.ds-secondary {
-  margin: 0;
-  font-size: 14px;
-  font-weight: var(--weight-small);
-  color: var(--text-muted);
-}
-
 .ds-label {
-  margin: 0;
   font-size: 12px;
-  font-weight: var(--weight-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* Selector de grosor: botones rectos unidos. */
+.ds-note,
+.ds-secondary {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.ds-body {
+  font-size: 16px;
+}
+
+.ds-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Selector: botones rectos unidos. */
 .ds-switch {
   display: flex;
 }
 
 .ds-switch-option {
+  display: flex;
   flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 44px;
   background: transparent;
   border: 1px solid var(--border);
@@ -127,164 +64,167 @@
 }
 
 .ds-switch-option[aria-pressed='true'] {
-  border-color: var(--blue);
+  border-color: var(--text-muted);
   color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--blue);
+  box-shadow: inset 0 0 0 1px var(--text-muted);
 }
 
-/* Vista previa: secciones separadas por línea fina, sin recuadros. */
-.ds-preview {
+.ds-swatch {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── En contexto ─────────────────────────────────────────────────────────── */
+
+.ds-round {
   display: flex;
   flex-direction: column;
-}
-
-.ds-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.ds-row {
-  display: flex;
-  gap: 8px;
-  padding-top: 8px;
-}
-
-.ds-field {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.ds-input {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  height: 48px;
-  padding: 0 12px;
-  background-color: var(--surface-2);
+  gap: 12px;
+  padding: 16px;
   border: 1px solid var(--border);
-  border-radius: 0;
-  color: var(--text);
-  font: inherit;
+}
+
+.ds-round-active {
+  border-color: var(--sample-blue);
+}
+
+.ds-round-done {
+  opacity: 0.55;
+}
+
+.ds-round-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 16px;
-  font-weight: var(--weight-small);
-  /* Sin esto, iOS dibuja la fecha a su manera y no respeta el ancho ni el alto. */
-  -webkit-appearance: none;
-  appearance: none;
 }
 
-.ds-input::-webkit-date-and-time-value {
-  text-align: left;
+.ds-row-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.ds-input:focus {
-  outline: none;
-  border-color: var(--blue);
+.ds-strike {
+  text-decoration: line-through;
+}
+
+.ds-number {
+  font-size: 20px;
+}
+
+/* Tilde: 44 × 44, vacío con borde; completado con relleno verde y tilde negra. */
+.ds-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--text-muted);
+}
+
+.ds-check-done {
+  background-color: var(--sample-green);
+  border-color: var(--sample-green);
+  color: var(--bg);
+}
+
+.ds-rpe {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ds-rpe-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ds-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  font-size: 18px;
+}
+
+.ds-chip-green {
+  border-color: var(--sample-green);
+  color: var(--sample-green);
+}
+
+.ds-chip-red {
+  border-color: var(--sample-red);
+  color: var(--sample-red);
+}
+
+.ds-text-green {
+  color: var(--sample-green);
+}
+
+.ds-text-red {
+  color: var(--sample-red);
 }
 
 .ds-button {
   width: 100%;
   min-height: 48px;
-  border-radius: 0;
   font: inherit;
   font-size: 16px;
   cursor: pointer;
 }
 
 .ds-button-primary {
-  margin-top: 8px;
-  background-color: var(--blue);
+  background-color: var(--sample-blue);
   border: none;
   color: var(--text);
   font-weight: 500;
 }
 
-.ds-button-secondary {
+.ds-button-destructive {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-weight: var(--weight-small);
+  border: 1px solid var(--sample-red);
+  color: var(--sample-red);
 }
 
-/* Ronda activa: borde azul con resplandor suave (DISENO.md §4). */
-.ds-round {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--blue);
-  box-shadow: 0 0 18px rgb(47 91 255 / 25%);
+/* ── Resplandor neón: una luz suave del mismo color, sin exagerar ────────── */
+
+.ds-neon .ds-round-active {
+  box-shadow:
+    0 0 14px color-mix(in srgb, var(--sample-blue) 35%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--sample-blue) 12%, transparent);
 }
 
-.ds-round-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+.ds-neon .ds-check-done {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--sample-green) 45%, transparent);
 }
 
-/* Colores de acento. Sobre verde y rojo va texto negro; sobre azul, blanco (DISENO.md §2). */
-.ds-accent {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.ds-neon .ds-chip-green {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sample-green) 35%, transparent);
 }
 
-.ds-fill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  font-weight: 500;
+.ds-neon .ds-chip-red {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sample-red) 35%, transparent);
 }
 
-.ds-fill-green {
-  background-color: var(--green);
-  color: var(--bg);
+.ds-neon .ds-chip-green,
+.ds-neon .ds-text-green {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--sample-green) 55%, transparent);
 }
 
-.ds-fill-red {
-  background-color: var(--red);
-  color: var(--bg);
+.ds-neon .ds-chip-red,
+.ds-neon .ds-text-red,
+.ds-neon .ds-button-destructive {
+  text-shadow: 0 0 8px color-mix(in srgb, var(--sample-red) 55%, transparent);
 }
 
-.ds-fill-blue {
-  background-color: var(--blue);
-  color: var(--text);
+.ds-neon .ds-button-primary {
+  box-shadow: 0 0 16px color-mix(in srgb, var(--sample-blue) 40%, transparent);
 }
 
-.ds-text-green {
-  color: var(--green);
-}
-
-.ds-text-red {
-  color: var(--red);
-}
-
-/* El azul no se usa para texto chico (contraste 3,8:1); acá va grande. */
-.ds-text-blue {
-  color: var(--blue);
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.ds-columns {
-  display: flex;
-  gap: 32px;
-}
-
-.ds-numbers {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 20px;
-}
-
-.ds-tabular {
-  font-variant-numeric: tabular-nums;
+.ds-neon .ds-button-destructive {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sample-red) 25%, transparent);
 }

@@ -1,167 +1,153 @@
-// Muestra de diseño temporal (paso 3): grosores de Jost, estilo sin tarjetas con
-// esquinas rectas y colores de acento, para decidir viéndolos en el iPhone.
+// Muestra de diseño temporal (paso 3): variantes de verde, rojo y azul y un
+// resplandor neón suave, para elegir viéndolos en el iPhone.
 
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import './DesignSample.css'
 
-type WeightId = 'current' | 'a' | 'b' | 'c'
+type Accent = 'green' | 'red' | 'blue'
 
-const WEIGHTS: { id: WeightId; name: string; description: string }[] = [
-  { id: 'current', name: 'Actual', description: 'Seminegrita en lo grande, normal en lo chico' },
-  { id: 'a', name: 'A', description: 'Fina en lo grande, normal en lo chico' },
-  { id: 'b', name: 'B', description: 'Fina en todo' },
-  { id: 'c', name: 'C', description: 'Muy fina en lo grande, fina en lo chico' },
-]
+const VARIANTS: Record<Accent, { name: string; options: { hex: string; label: string }[] }> = {
+  green: {
+    name: 'Verde',
+    options: [
+      { hex: '#089981', label: 'actual' },
+      { hex: '#0DB592', label: 'un poco más luminoso' },
+      { hex: '#12C9A0', label: 'un poco más todavía' },
+    ],
+  },
+  red: {
+    name: 'Rojo',
+    options: [
+      { hex: '#F23645', label: 'actual' },
+      { hex: '#FF3D52', label: 'un poco más luminoso' },
+      { hex: '#FF4F63', label: 'un poco más todavía' },
+    ],
+  },
+  blue: {
+    name: 'Azul',
+    options: [
+      { hex: '#2F5BFF', label: 'actual' },
+      { hex: '#3A5FE0', label: 'un poco más apagado' },
+      { hex: '#4466D6', label: 'más apagado' },
+    ],
+  },
+}
 
-const ACCENTS = [
-  { name: 'Verde', hex: '#089981', className: 'green', fill: 'Completado', text: 'RPE 4 · liviano' },
-  { name: 'Rojo', hex: '#F23645', className: 'red', fill: 'Eliminar', text: 'RPE 10 · esfuerzo máximo' },
-  { name: 'Azul', hex: '#2F5BFF', className: 'blue', fill: 'Empezar', text: 'Ronda activa' },
-]
+const ACCENTS: Accent[] = ['green', 'red', 'blue']
 
-function WeightBlock({ weight }: { weight: WeightId }) {
+function CheckIcon() {
   return (
-    <div className={`ds-weight ds-weight-${weight}`}>
-      <p className="ds-title">Sentadilla</p>
-      <p className="ds-big">85 kg</p>
-      <p className="ds-secondary">84 exactos</p>
-      <p className="ds-body">8 repeticiones · Descanso: 180 s</p>
-      <p className="ds-label">Ronda 2 de 4</p>
-    </div>
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
   )
 }
 
 export function DesignSample() {
-  const [weight, setWeight] = useState<WeightId>('a')
-  const [maxText, setMaxText] = useState('87,5')
-  const [dateText, setDateText] = useState('2026-10-22')
+  const [chosen, setChosen] = useState<Record<Accent, number>>({ green: 0, red: 0, blue: 0 })
+  const [neon, setNeon] = useState(true)
+
+  const colors = {
+    '--sample-green': VARIANTS.green.options[chosen.green].hex,
+    '--sample-red': VARIANTS.red.options[chosen.red].hex,
+    '--sample-blue': VARIANTS.blue.options[chosen.blue].hex,
+  } as CSSProperties
 
   return (
-    <div className="ds">
+    <div className={neon ? 'ds ds-neon' : 'ds'} style={colors}>
       <section className="ds-section">
-        <h2 className="ds-heading">1. Grosor de la letra</h2>
-        <p className="ds-note">El mismo bloque con cada grosor. Miralo con el brazo estirado.</p>
-        {WEIGHTS.map((w) => (
-          <div key={w.id} className="ds-compare">
-            <p className="ds-variant">
-              {w.name} · {w.description}
-            </p>
-            <WeightBlock weight={w.id} />
-          </div>
-        ))}
-      </section>
-
-      <section className="ds-section">
-        <h2 className="ds-heading">2. Sin tarjetas, esquinas rectas</h2>
-        <p className="ds-note">Elegí el grosor para ver la pantalla completa con él.</p>
-        <div className="ds-switch" role="group" aria-label="Grosor">
-          {WEIGHTS.map((w) => (
-            <button
-              key={w.id}
-              type="button"
-              aria-pressed={weight === w.id}
-              className="ds-switch-option"
-              onClick={() => setWeight(w.id)}
-            >
-              {w.name}
-            </button>
-          ))}
-        </div>
-
-        <div className={`ds-preview ds-weight-${weight}`}>
-          <div className="ds-block">
-            <p className="ds-label">Ejercicio</p>
-            <p className="ds-title">Dominadas</p>
-            <p className="ds-secondary">Redondeo: 1,25 kg (propio del ejercicio)</p>
-          </div>
-
-          <div className="ds-block">
-            <p className="ds-label">Máximo</p>
-            <p className="ds-big">40 kg</p>
-            <p className="ds-secondary">Vigente desde el 22/10/2026</p>
-            <div className="ds-row">
-              <label className="ds-field">
-                <span className="ds-label">Kg</span>
-                <input
-                  className="ds-input"
-                  inputMode="decimal"
-                  value={maxText}
-                  onChange={(event) => setMaxText(event.target.value)}
-                />
-              </label>
-              <label className="ds-field">
-                <span className="ds-label">Fecha</span>
-                <input
-                  className="ds-input"
-                  type="date"
-                  value={dateText}
-                  onChange={(event) => setDateText(event.target.value)}
-                />
-              </label>
-            </div>
-            <button type="button" className="ds-button ds-button-primary">
-              Guardar máximo
-            </button>
-            <button type="button" className="ds-button ds-button-secondary">
-              Agregar ejercicio
-            </button>
-          </div>
-
-          <div className="ds-block">
-            <p className="ds-label">Cálculo de carga · 70%</p>
-            <p className="ds-big">25 kg</p>
-            <p className="ds-secondary">24,5 exactos</p>
-          </div>
-
-          <div className="ds-block">
-            <p className="ds-label">Lo que conserva recuadro: la ronda activa</p>
-            <div className="ds-round">
-              <p className="ds-label">Ronda 2 · activa</p>
-              <div className="ds-round-row">
-                <span className="ds-body">Sentadilla · 8</span>
-                <span className="ds-number">85 kg</span>
-              </div>
-              <div className="ds-round-row">
-                <span className="ds-body">Isquio isométrico · 30 s</span>
-                <span className="ds-number">Libre</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="ds-section">
-        <h2 className="ds-heading">3. Colores de acento</h2>
-        <p className="ds-note">Como relleno y como texto sobre el fondo. ¿Se ven bien en tu pantalla?</p>
-        {ACCENTS.map((accent) => (
-          <div key={accent.name} className="ds-accent">
-            <div className={`ds-fill ds-fill-${accent.className}`}>{accent.fill}</div>
-            <p className={`ds-body ds-text-${accent.className}`}>{accent.text}</p>
-            <p className="ds-secondary">
-              {accent.name} · {accent.hex}
-            </p>
-          </div>
-        ))}
-      </section>
-
-      <section className="ds-section">
-        <h2 className="ds-heading">4. Números alineados</h2>
+        <p className="ds-label">Colores y efecto neón</p>
         <p className="ds-note">
-          Izquierda: números normales. Derecha: de ancho fijo. Si Jost los tiene, las comas de
-          la derecha quedan en columna.
+          Elegí una variante de cada color y prendé o apagá el resplandor. Abajo se ve cómo
+          quedan en la app.
         </p>
-        <div className="ds-columns">
-          <div className="ds-numbers">
-            <span>111,25 kg</span>
-            <span>85,00 kg</span>
-            <span>102,50 kg</span>
+
+        {ACCENTS.map((accent) => (
+          <div key={accent} className="ds-choice">
+            <p className="ds-body">
+              {VARIANTS[accent].name} {chosen[accent] + 1} · {VARIANTS[accent].options[chosen[accent]].label} ·{' '}
+              {VARIANTS[accent].options[chosen[accent]].hex}
+            </p>
+            <div className="ds-switch" role="group" aria-label={VARIANTS[accent].name}>
+              {VARIANTS[accent].options.map((option, index) => (
+                <button
+                  key={option.hex}
+                  type="button"
+                  aria-pressed={chosen[accent] === index}
+                  className="ds-switch-option"
+                  onClick={() => setChosen({ ...chosen, [accent]: index })}
+                >
+                  <span className="ds-swatch" style={{ backgroundColor: option.hex }} />
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="ds-numbers ds-tabular">
-            <span>111,25 kg</span>
-            <span>85,00 kg</span>
-            <span>102,50 kg</span>
+        ))}
+
+        <div className="ds-choice">
+          <p className="ds-body">Resplandor neón</p>
+          <div className="ds-switch" role="group" aria-label="Resplandor neón">
+            <button type="button" aria-pressed={neon} className="ds-switch-option" onClick={() => setNeon(true)}>
+              Prendido
+            </button>
+            <button type="button" aria-pressed={!neon} className="ds-switch-option" onClick={() => setNeon(false)}>
+              Apagado
+            </button>
           </div>
         </div>
+      </section>
+
+      <section className="ds-section">
+        <p className="ds-label">En contexto</p>
+
+        <div className="ds-round ds-round-done">
+          <div className="ds-round-row">
+            <span className="ds-strike">Ronda 1</span>
+            <span className="ds-check ds-check-done">
+              <CheckIcon />
+            </span>
+          </div>
+        </div>
+
+        <div className="ds-round ds-round-active">
+          <p className="ds-label">Ronda 2 · activa</p>
+          <div className="ds-round-row">
+            <span>Sentadilla · 8</span>
+            <span className="ds-row-end">
+              <span className="ds-number">85 kg</span>
+              <span className="ds-check ds-check-done">
+                <CheckIcon />
+              </span>
+            </span>
+          </div>
+          <div className="ds-round-row">
+            <span>Isquio isométrico · 30 s</span>
+            <span className="ds-row-end">
+              <span className="ds-number">Libre</span>
+              <span className="ds-check" />
+            </span>
+          </div>
+          <p className="ds-secondary">Descanso: 180 s</p>
+        </div>
+
+        <div className="ds-rpe">
+          <p className="ds-label">RPE</p>
+          <div className="ds-rpe-row">
+            <span className="ds-chip ds-chip-green">4</span>
+            <span className="ds-chip">7</span>
+            <span className="ds-chip ds-chip-red">10</span>
+          </div>
+          <p className="ds-text-green">RPE 4 · liviano</p>
+          <p className="ds-text-red">RPE 10 · esfuerzo máximo</p>
+        </div>
+
+        <button type="button" className="ds-button ds-button-primary">
+          Semana 3 · Día 2
+        </button>
+        <button type="button" className="ds-button ds-button-destructive">
+          Eliminar semana
+        </button>
       </section>
     </div>
   )

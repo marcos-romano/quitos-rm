@@ -240,6 +240,6 @@ La definición completa está en `DISENO.md`, que es la fuente de verdad de colo
 1. Archivos de referencia del usuario (Word y Excel) con la disposición deseada de los ejercicios. Ajustan las secciones 6.3 y 7 y se esperan antes de construir la sesión de entrenamiento y la importación de Excel.
 2. Ícono de la app. Provisoriamente, una versión simple con fondo `#0A0B0F`.
 3. Ajuste fino de los colores verde, rojo y azul al verlos en pantallas reales (`DISENO.md`, sección 2).
-4. Verificar si Jost ofrece cifras de ancho uniforme (tabulares) para alinear números en tablas. Si no, definir una alternativa solo para números.
+4. ~~Cifras tabulares de Jost~~: resuelto. Jost las tiene y se usan en toda la app (`DISENO.md` §3).
 5. Contenido de las celdas del resumen de RPE por día (sección 6.1): por ahora solo el RPE, con repeticiones y kilos reales al tocar la celda. Se puede cambiar al ver la pantalla.
 6. Botón del día en Inicio: tiene el mismo tamaño que los demás botones (corregir `DISENO.md` §5, que dice "grande", en el paso 3). Confirmar el formato del texto: "Semana 3, Día 2" o "Semana 3 · Día 2".

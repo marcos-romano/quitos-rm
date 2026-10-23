@@ -1,4 +1,4 @@
-/* Colores de DISENO.md §2. Los componentes base se completan en el paso 3. */
+/* Colores (DISENO.md §2) y letra fina con números de ancho fijo (§3). */
 :root {
   --bg: #0a0b0f;
   --text: #f7f9fb;
@@ -12,6 +12,8 @@
 
   color-scheme: dark;
   font-family: 'Jost Variable', 'Jost', -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -21,6 +23,14 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* Esquinas rectas en todo (DISENO.md §4): iOS redondea los controles si no se indica. */
+input,
+select,
+textarea,
+button {
+  border-radius: 0;
 }
 
 body {
@@ -51,7 +61,7 @@ body {
 .app-title {
   margin: 0;
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .app-version,
@@ -74,7 +84,6 @@ body {
   padding: 12px 12px 12px 16px;
   background-color: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
   font-size: 16px;
 }
 
@@ -82,11 +91,10 @@ body {
   min-height: 48px;
   padding: 0 16px;
   border: none;
-  border-radius: 10px;
   background-color: var(--blue);
   color: var(--text);
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 

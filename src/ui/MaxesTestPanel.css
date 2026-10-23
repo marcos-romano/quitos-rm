@@ -1,13 +1,13 @@
-/* Panel de prueba temporal (paso 2.6). Medidas y colores de DISENO.md §3 a §5. */
+/* Panel de prueba temporal (paso 2.6). Sin tarjetas y con esquinas rectas (DISENO.md §4 y §5). */
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .panel-intro {
   margin: 0;
+  padding-bottom: 20px;
   font-size: 14px;
   color: var(--text-muted);
 }
@@ -16,16 +16,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
 }
 
 .section-title {
   margin: 0;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .field {
@@ -38,7 +36,6 @@
 
 .field-label {
   font-size: 12px;
-  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -51,7 +48,6 @@
   padding: 0 12px;
   background-color: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
   color: var(--text);
   font: inherit;
   font-size: 16px;
@@ -73,7 +69,6 @@
   padding: 0 16px;
   background-color: transparent;
   border: 1px solid var(--border);
-  border-radius: 10px;
   color: var(--text);
   font: inherit;
   cursor: pointer;
@@ -91,8 +86,8 @@
 
 .big-number {
   margin: 0;
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.1;
 }
 
 .secondary {

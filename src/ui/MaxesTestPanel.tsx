@@ -37,7 +37,6 @@ export function MaxesTestPanel() {
 
   const [newName, setNewName] = useState('')
   const [maxText, setMaxText] = useState('')
-  const [dateText, setDateText] = useState(() => toLocalDate(new Date()))
   const [percentText, setPercentText] = useState('70')
   const [message, setMessage] = useState<Message>()
 
@@ -102,7 +101,8 @@ export function MaxesTestPanel() {
       return
     }
     try {
-      await addMax(db, { exerciseId: selectedId, kg, date: dateText })
+      // La fecha se guarda sola: el día en que se carga el máximo.
+      await addMax(db, { exerciseId: selectedId, kg, date: toLocalDate(new Date()) })
       setHistory(await getMaxHistory(db, selectedId))
       setMaxText('')
       setMessage({ kind: 'ok', text: `Máximo de ${formatKg(kg)} guardado.` })
@@ -167,27 +167,16 @@ export function MaxesTestPanel() {
         )}
         {currentMax && <p className="secondary">Vigente desde el {formatDate(currentMax.date)}</p>}
 
-        <div className="row">
-          <label className="field">
-            <span className="field-label">Kg</span>
-            <input
-              className="input"
-              inputMode="decimal"
-              placeholder="87,5"
-              value={maxText}
-              onChange={(event) => setMaxText(event.target.value)}
-            />
-          </label>
-          <label className="field">
-            <span className="field-label">Fecha</span>
-            <input
-              className="input"
-              type="date"
-              value={dateText}
-              onChange={(event) => setDateText(event.target.value)}
-            />
-          </label>
-        </div>
+        <label className="field">
+          <span className="field-label">Nuevo máximo (kg)</span>
+          <input
+            className="input"
+            inputMode="decimal"
+            placeholder="87,5"
+            value={maxText}
+            onChange={(event) => setMaxText(event.target.value)}
+          />
+        </label>
         <button
           type="button"
           className="button-primary button-full"
