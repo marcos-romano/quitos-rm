@@ -20,6 +20,11 @@ export function parseDecimal(text: string): number | undefined {
   return Number(trimmed.replace(',', '.'))
 }
 
+/** Texto del botón del día (DISENO.md §5): "Semana 3 · Día 2". */
+export function formatDayLabel(weekNumber: number, dayName: string): string {
+  return `Semana ${weekNumber} · ${dayName}`
+}
+
 /** 1.25 → "1,25 kg"; 'exact' → "exacto". */
 export function formatIncrement(increment: RoundingIncrement): string {
   return increment === 'exact' ? 'exacto' : formatKg(increment)

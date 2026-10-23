@@ -10,6 +10,13 @@
   --green: #089981;
   --red: #f23645;
 
+  /* Resplandor neón de los colores de acento (DISENO.md §4). */
+  --glow-blue: 0 0 14px color-mix(in srgb, var(--blue) 45%, transparent);
+  --glow-green: 0 0 12px color-mix(in srgb, var(--green) 45%, transparent);
+  --glow-red: 0 0 10px color-mix(in srgb, var(--red) 30%, transparent);
+  --text-glow-green: 0 0 8px color-mix(in srgb, var(--green) 55%, transparent);
+  --text-glow-red: 0 0 8px color-mix(in srgb, var(--red) 55%, transparent);
+
   color-scheme: dark;
   font-family: 'Jost Variable', 'Jost', -apple-system, 'SF Pro Text', system-ui, sans-serif;
   font-weight: 300;
@@ -94,7 +101,6 @@ body {
   background-color: var(--blue);
   color: var(--text);
   font: inherit;
-  font-weight: 500;
   cursor: pointer;
 }
 
@@ -125,4 +131,18 @@ body {
   box-shadow:
     inset 0 0 0 1px var(--blue),
     0 0 12px color-mix(in srgb, var(--blue) 45%, transparent);
+}
+
+/* Catálogo temporal de componentes (paso 3). */
+.catalog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.catalog-row-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }

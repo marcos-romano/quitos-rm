@@ -1,0 +1,224 @@
+/* Componentes base (DISENO.md §3 a §5): letra fina, esquinas rectas, sin tarjetas
+   y resplandor neón en los colores de acento (los valores --glow-* están en index.css). */
+
+/* ── Textos ──────────────────────────────────────────────────────────────── */
+
+.text-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.text-body {
+  margin: 0;
+  font-size: 16px;
+}
+
+.text-secondary {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.number-large {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+/* ── Sección sin tarjeta ─────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Botones ─────────────────────────────────────────────────────────────── */
+
+.button {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button-full {
+  width: 100%;
+}
+
+.button-primary {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: var(--text);
+  box-shadow: var(--glow-blue);
+}
+
+.button-secondary {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.button-destructive {
+  background-color: transparent;
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: var(--glow-red);
+  text-shadow: var(--text-glow-red);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+  text-shadow: none;
+  cursor: default;
+}
+
+.button:focus-visible,
+.tick:focus-visible,
+.rpe-chip:focus-visible {
+  outline: 1px solid var(--text-muted);
+  outline-offset: 2px;
+}
+
+/* ── Campo de texto ──────────────────────────────────────────────────────── */
+
+.text-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* 16 px como mínimo para que iOS no haga zoom al tocar el campo. */
+.text-input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.text-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: var(--glow-blue);
+}
+
+.text-input-error,
+.text-input-error:focus {
+  border-color: var(--red);
+  box-shadow: var(--glow-red);
+}
+
+.text-error {
+  font-size: 14px;
+  color: var(--red);
+  text-shadow: var(--text-glow-red);
+}
+
+/* ── Carga ───────────────────────────────────────────────────────────────── */
+
+.load-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Tilde de ejercicio ──────────────────────────────────────────────────── */
+
+.tick {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background-color: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--bg);
+  cursor: pointer;
+}
+
+.tick-checked {
+  background-color: var(--green);
+  border-color: var(--green);
+  box-shadow: var(--glow-green);
+}
+
+/* ── Selector de RPE: tono por valor; la ficha elegida se rellena ────────── */
+
+.rpe {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rpe-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.rpe-chip {
+  min-height: 48px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.rpe-low {
+  color: var(--green);
+  text-shadow: var(--text-glow-green);
+}
+
+.rpe-high {
+  color: var(--red);
+  text-shadow: var(--text-glow-red);
+}
+
+.rpe-chip[aria-pressed='true'] {
+  color: var(--bg);
+  text-shadow: none;
+}
+
+.rpe-neutral[aria-pressed='true'] {
+  background-color: var(--text-muted);
+  border-color: var(--text-muted);
+}
+
+.rpe-low[aria-pressed='true'] {
+  background-color: var(--green);
+  border-color: var(--green);
+  box-shadow: var(--glow-green);
+}
+
+.rpe-high[aria-pressed='true'] {
+  background-color: var(--red);
+  border-color: var(--red);
+  box-shadow: var(--glow-red);
+}

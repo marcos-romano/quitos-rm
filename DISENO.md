@@ -1,6 +1,6 @@
 # quitos_RM: guía de diseño
 
-Versión 1.3. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
+Versión 1.4. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
 
 ## 1. Principios
 
@@ -51,7 +51,7 @@ Reglas que se desprenden:
 ## 3. Tipografía
 
 - Fuente: Jost, autoalojada en el proyecto (no cargada desde un servicio externo), en su versión variable.
-- Peso 300 (fino) en toda la app, elegido por el usuario en la muestra de diseño. Única excepción: el texto de los botones principales va en 500, para que se lea bien sobre el relleno azul.
+- Peso 300 (fino) en toda la app, sin excepciones, elegido por el usuario en la muestra de diseño. Incluye el texto de los botones.
 - Alternativa de respaldo: `"Jost", -apple-system, "SF Pro Text", system-ui, sans-serif`.
 - Escala:
 
@@ -82,14 +82,14 @@ Reglas que se desprenden:
 ## 5. Componentes
 
 **Botones.** Altura mínima de 48 px, ancho completo en las acciones principales.
-- Principal: relleno azul, texto blanco nieve, peso 500.
+- Principal: relleno azul con resplandor neón, texto blanco nieve, peso 300.
 - Secundario: fondo transparente, borde de 1 px, texto blanco nieve.
 - Destructivo: borde y texto rojos, siempre con confirmación.
 - Deshabilitado: opacidad 40%.
 
 **Secciones.** Sin tarjetas ni fondo propio. Cada sección se separa de la siguiente con una línea de 1 px en `--border` y 20 a 24 px de espacio. El título de sección va como etiqueta en mayúsculas o como título de 20 px.
 
-**Botón del día (Inicio).** Botón principal del mismo tamaño que los demás botones, con el texto "Semana 3 · Día 2" (o el que corresponda) y una etiqueta pequeña encima. Si hay una sesión en curso, la etiqueta y la acción dicen "Continuar".
+**Botón del día (Inicio).** Botón principal del mismo tamaño que los demás botones, con el texto "Semana 3 · Día 2" (con punto medio, confirmado por el usuario; o el que corresponda) y una etiqueta pequeña encima. Si hay una sesión en curso, la etiqueta y la acción dicen "Continuar".
 
 **Cuadrícula del programa (Inicio).** Semanas en filas y días en columnas. Cada estado lleva color y además una marca distinta:
 - Completado: tinte verde, borde verde e ícono de tilde.
@@ -138,6 +138,5 @@ Reglas que se desprenden:
 
 ## 9. Ajustes pendientes
 
-- Formato del texto del botón del día: "Semana 3, Día 2" o "Semana 3 · Día 2".
 - Mostrar las fechas como dd/mm/aaaa aunque el iPhone esté en otro idioma.
 - Definir el ícono definitivo.

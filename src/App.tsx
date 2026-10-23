@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { DesignSample } from './ui/DesignSample.tsx'
+import { ComponentCatalog } from './ui/ComponentCatalog.tsx'
 import { MaxesTestPanel } from './ui/MaxesTestPanel.tsx'
 import { UpdatePrompt } from './ui/UpdatePrompt.tsx'
 
-type View = 'panel' | 'sample'
+type View = 'panel' | 'catalog'
 
 function App() {
   const [view, setView] = useState<View>('panel')
@@ -18,11 +18,11 @@ function App() {
         <button type="button" aria-pressed={view === 'panel'} onClick={() => setView('panel')}>
           Panel de prueba
         </button>
-        <button type="button" aria-pressed={view === 'sample'} onClick={() => setView('sample')}>
-          Muestra de diseño
+        <button type="button" aria-pressed={view === 'catalog'} onClick={() => setView('catalog')}>
+          Componentes
         </button>
       </div>
-      {view === 'panel' ? <MaxesTestPanel /> : <DesignSample />}
+      {view === 'panel' ? <MaxesTestPanel /> : <ComponentCatalog />}
       <UpdatePrompt />
     </main>
   )

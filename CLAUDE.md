@@ -242,4 +242,4 @@ La definición completa está en `DISENO.md`, que es la fuente de verdad de colo
 3. Ajuste fino de los colores verde, rojo y azul al verlos en pantallas reales (`DISENO.md`, sección 2).
 4. ~~Cifras tabulares de Jost~~: resuelto. Jost las tiene y se usan en toda la app (`DISENO.md` §3).
 5. Contenido de las celdas del resumen de RPE por día (sección 6.1): por ahora solo el RPE, con repeticiones y kilos reales al tocar la celda. Se puede cambiar al ver la pantalla.
-6. Botón del día en Inicio: tiene el mismo tamaño que los demás botones (corregir `DISENO.md` §5, que dice "grande", en el paso 3). Confirmar el formato del texto: "Semana 3, Día 2" o "Semana 3 · Día 2".
+6. ~~Botón del día en Inicio~~: resuelto. Mismo tamaño que los demás botones y texto "Semana 3 · Día 2", con punto medio (`DISENO.md` §5).

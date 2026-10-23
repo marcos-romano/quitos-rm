@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   formatDate,
+  formatDayLabel,
   formatIncrement,
   formatKg,
   formatLoad,
@@ -32,6 +33,12 @@ describe('parseDecimal', () => {
 
   test.each(['', 'abc', '1O', '1,2,3', '-5', '87,'])('"%s" no es un número válido', (text) => {
     expect(parseDecimal(text)).toBeUndefined()
+  })
+})
+
+describe('formatDayLabel', () => {
+  test('el botón del día dice "Semana 3 · Día 2", con punto medio', () => {
+    expect(formatDayLabel(3, 'Día 2')).toBe('Semana 3 · Día 2')
   })
 })
 
