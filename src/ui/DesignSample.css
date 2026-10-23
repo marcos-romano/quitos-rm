@@ -1,0 +1,290 @@
+/* Muestra de diseño temporal (paso 3). Sin tarjetas y con esquinas rectas. */
+
+.ds {
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+
+.ds-heading {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.ds-note,
+.ds-variant {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.ds-variant {
+  color: var(--text);
+}
+
+.ds-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Grosores: cada variante define el peso de lo grande y de lo chico. */
+.ds-weight-current {
+  --weight-large: 600;
+  --weight-small: 400;
+  --weight-label: 500;
+}
+
+.ds-weight-a {
+  --weight-large: 300;
+  --weight-small: 400;
+  --weight-label: 400;
+}
+
+.ds-weight-b {
+  --weight-large: 300;
+  --weight-small: 300;
+  --weight-label: 300;
+}
+
+.ds-weight-c {
+  --weight-large: 200;
+  --weight-small: 300;
+  --weight-label: 300;
+}
+
+.ds-weight p {
+  margin: 0;
+}
+
+.ds-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--weight-large);
+}
+
+.ds-big {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: var(--weight-large);
+}
+
+.ds-number {
+  font-size: 20px;
+  font-weight: var(--weight-large);
+}
+
+.ds-body {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--weight-small);
+}
+
+.ds-secondary {
+  margin: 0;
+  font-size: 14px;
+  font-weight: var(--weight-small);
+  color: var(--text-muted);
+}
+
+.ds-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: var(--weight-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Selector de grosor: botones rectos unidos. */
+.ds-switch {
+  display: flex;
+}
+
+.ds-switch-option {
+  flex: 1;
+  min-height: 44px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ds-switch-option + .ds-switch-option {
+  border-left: none;
+}
+
+.ds-switch-option[aria-pressed='true'] {
+  border-color: var(--blue);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+/* Vista previa: secciones separadas por línea fina, sin recuadros. */
+.ds-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ds-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.ds-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ds-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: var(--weight-small);
+  /* Sin esto, iOS dibuja la fecha a su manera y no respeta el ancho ni el alto. */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ds-input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.ds-input:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+.ds-button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 0;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ds-button-primary {
+  margin-top: 8px;
+  background-color: var(--blue);
+  border: none;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.ds-button-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: var(--weight-small);
+}
+
+/* Ronda activa: borde azul con resplandor suave (DISENO.md §4). */
+.ds-round {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--blue);
+  box-shadow: 0 0 18px rgb(47 91 255 / 25%);
+}
+
+.ds-round-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Colores de acento. Sobre verde y rojo va texto negro; sobre azul, blanco (DISENO.md §2). */
+.ds-accent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ds-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  font-weight: 500;
+}
+
+.ds-fill-green {
+  background-color: var(--green);
+  color: var(--bg);
+}
+
+.ds-fill-red {
+  background-color: var(--red);
+  color: var(--bg);
+}
+
+.ds-fill-blue {
+  background-color: var(--blue);
+  color: var(--text);
+}
+
+.ds-text-green {
+  color: var(--green);
+}
+
+.ds-text-red {
+  color: var(--red);
+}
+
+/* El azul no se usa para texto chico (contraste 3,8:1); acá va grande. */
+.ds-text-blue {
+  color: var(--blue);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ds-columns {
+  display: flex;
+  gap: 32px;
+}
+
+.ds-numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 20px;
+}
+
+.ds-tabular {
+  font-variant-numeric: tabular-nums;
+}
