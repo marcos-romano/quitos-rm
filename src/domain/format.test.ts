@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { formatNumber } from './format.ts'
+import { formatDate, formatKg, formatLoad, formatNumber, toLocalDate } from './format.ts'
 
 describe('formatNumber', () => {
   test.each([
@@ -9,5 +9,45 @@ describe('formatNumber', () => {
     [0, '0'],
   ])('%s se muestra como "%s"', (value, expected) => {
     expect(formatNumber(value)).toBe(expected)
+  })
+})
+
+describe('formatKg', () => {
+  test('agrega la unidad: 87,5 kg', () => {
+    expect(formatKg(87.5)).toBe('87,5 kg')
+  })
+})
+
+describe('formatLoad', () => {
+  test('peso calculado: principal redondeado y secundario exacto', () => {
+    expect(formatLoad({ status: 'calculated', kg: 85, exactKg: 84 })).toEqual({
+      main: '85 kg',
+      secondary: '84 exactos',
+    })
+  })
+
+  test('exacto con decimales lleva coma', () => {
+    expect(formatLoad({ status: 'calculated', kg: 82.5, exactKg: 82.45 }).secondary).toBe('82,45 exactos')
+  })
+
+  test('kg fijos, libre y sin máximo', () => {
+    expect(formatLoad({ status: 'fixed', kg: 60 })).toEqual({ main: '60 kg' })
+    expect(formatLoad({ status: 'free' })).toEqual({ main: 'Libre' })
+    expect(formatLoad({ status: 'missing-max' })).toEqual({ main: 'Falta cargar el máximo' })
+  })
+})
+
+describe('fechas', () => {
+  test('se muestran como dd/mm/aaaa', () => {
+    expect(formatDate('2026-10-23')).toBe('23/10/2026')
+    expect(formatDate('2026-01-05')).toBe('05/01/2026')
+  })
+
+  test('un entrenamiento a las 23:30 queda en su día, no en el siguiente', () => {
+    expect(toLocalDate(new Date(2026, 9, 23, 23, 30))).toBe('2026-10-23')
+  })
+
+  test('el primer minuto del día también es de ese día', () => {
+    expect(toLocalDate(new Date(2026, 0, 5, 0, 0))).toBe('2026-01-05')
   })
 })
