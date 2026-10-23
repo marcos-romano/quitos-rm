@@ -1,0 +1,15 @@
+#!/bin/sh
+# Guardia antes de cada commit: revisa los tipos y corre los tests.
+# Si algo falla, el commit no se hace. Se activa sola con `npm install` (script "prepare").
+
+echo "Revisando tipos..."
+npm run --silent typecheck || {
+  echo "El commit se canceló: hay errores de tipos."
+  exit 1
+}
+
+echo "Corriendo tests..."
+npm test --silent || {
+  echo "El commit se canceló: hay tests que fallan."
+  exit 1
+}
