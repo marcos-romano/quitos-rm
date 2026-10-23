@@ -3,6 +3,7 @@
 .ds {
   --sample-green: var(--green);
   --sample-red: var(--red);
+  --sample-blue: var(--blue);
 }
 
 .ds {

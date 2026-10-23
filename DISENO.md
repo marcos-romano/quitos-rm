@@ -1,6 +1,6 @@
 # quitos_RM: guía de diseño
 
-Versión 1.2. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
+Versión 1.3. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
 
 ## 1. Principios
 
@@ -22,13 +22,11 @@ Versión 1.2. Es la fuente de verdad del diseño visual de la app. El fondo, el 
 | `--text-muted` | Texto secundario | `#9AA3AF` | Datos secundarios y etiquetas (derivado) |
 | `--green` | Verde estilo TradingView | `#089981` | Completado, avance, esfuerzo bajo |
 | `--red` | Rojo estilo TradingView | `#F23645` | Esfuerzo máximo, acciones destructivas, errores |
-| `--blue` | Azul francia, cercano al ultramar | `#2F5BFF` | Acción principal, ronda activa, foco y selección |
+| `--blue` | Azul oscuro, entre francia y medianoche | `#243AB8` | Acción principal, ronda activa, foco y selección |
 
-Los valores de verde y rojo son los que se recuerdan como colores por defecto de TradingView. El azul es una propuesta intermedia entre el azul de Francia y el ultramar.
-
-Verde y rojo confirmados por el usuario en pantalla real (versión 0.4.0), con resplandor neón (sección 4).
-
-**Azul en revisión:** el usuario lo quiere más oscuro, entre el azul actual y el azul medianoche (`#191970`). Un azul más oscuro mejora el contraste del texto blanco sobre el botón principal, pero hace menos visibles las líneas finas azules sobre el fondo; el resplandor neón lo compensa. Las variantes se comparan en la muestra de la versión 0.5.0. Al elegir, se actualizan esta tabla y la de contraste.
+Los tres colores de acento los eligió el usuario en pantalla real, con resplandor neón (sección 4):
+- Verde y rojo: los que se recuerdan como colores por defecto de TradingView (versión 0.4.0).
+- Azul: el intermedio exacto entre el azul anterior (`#2F5BFF`) y el azul medianoche (`#191970`), elegido en la versión 0.5.0.
 
 ### Contraste verificado (WCAG, calculado de forma independiente)
 
@@ -40,14 +38,14 @@ Verde y rojo confirmados por el usuario en pantalla real (versión 0.4.0), con r
 | Texto secundario sobre superficie | 7,22:1 | Todo |
 | Verde sobre fondo | 5,51:1 | Texto y elementos |
 | Rojo sobre fondo | 5,05:1 | Texto y elementos |
-| Azul sobre fondo | 3,80:1 | Solo relleno, bordes, íconos y texto grande en negrita |
-| Texto sobre relleno azul | 4,90:1 | Texto de botones principales |
+| Azul sobre fondo | 2,22:1 | Solo rellenos, y bordes o íconos con resplandor neón. Nunca texto |
+| Texto sobre relleno azul | 8,39:1 | Texto de botones principales |
 | Fondo sobre relleno verde | 5,51:1 | Texto sobre relleno verde |
 | Fondo sobre relleno rojo | 5,05:1 | Texto sobre relleno rojo |
 | Texto sobre relleno rojo | 3,69:1 | No usar para texto chico |
 
 Reglas que se desprenden:
-- El azul no se usa para texto pequeño sobre fondo oscuro.
+- El azul no se usa para texto sobre el fondo oscuro. Como línea fina o ícono siempre lleva el resplandor neón, para que se distinga.
 - Sobre relleno azul va texto blanco nieve. Sobre relleno verde o rojo va texto en negro medianoche.
 
 ## 3. Tipografía
@@ -130,7 +128,7 @@ Reglas que se desprenden:
 - `theme_color` y `background_color`: `#0A0B0F`.
 - `viewport-fit=cover` y áreas seguras (`safe-area-inset-*`) aplicadas a las barras fijas.
 - Barra de estado de iOS en modo translúcido sobre negro, con texto claro.
-- Ícono provisorio: fondo `#0A0B0F` con la letra "q" en blanco nieve y un detalle en azul. Tamaños: 180 por 180 px para iOS, y 192 y 512 px para el manifiesto. El ícono definitivo queda pendiente.
+- Ícono provisorio: fondo `#0A0B0F` con la letra "q" en blanco nieve y un detalle en el azul anterior (`#2F5BFF`), que se actualiza junto con el ícono definitivo. Tamaños: 180 por 180 px para iOS, y 192 y 512 px para el manifiesto. El ícono definitivo queda pendiente.
 
 ## 8. Accesibilidad
 
@@ -140,7 +138,6 @@ Reglas que se desprenden:
 
 ## 9. Ajustes pendientes
 
-- Elegir el azul definitivo, más oscuro que el actual (muestra de la versión 0.5.0).
 - Formato del texto del botón del día: "Semana 3, Día 2" o "Semana 3 · Día 2".
 - Mostrar las fechas como dd/mm/aaaa aunque el iPhone esté en otro idioma.
 - Definir el ícono definitivo.
