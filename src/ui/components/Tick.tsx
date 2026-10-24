@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import './components.css'
 
 type TickProps = {
@@ -17,11 +18,7 @@ export function Tick({ checked, onChange, label }: TickProps) {
       aria-label={label}
       onClick={() => onChange(!checked)}
     >
-      {checked && (
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" strokeWidth="2" />
-        </svg>
-      )}
+      {checked && <Check size={22} strokeWidth={2} aria-hidden="true" />}
     </button>
   )
 }

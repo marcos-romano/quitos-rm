@@ -1,7 +1,7 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { ComponentProps } from 'react'
 import './components.css'
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ComponentProps<'button'> & {
   /** Principal (relleno azul), secundario (borde neutro) o destructivo (rojo, siempre con confirmación). */
   variant?: 'primary' | 'secondary' | 'destructive'
   /** Ancho completo, para las acciones principales. */

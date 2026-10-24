@@ -222,3 +222,118 @@
   border-color: var(--red);
   box-shadow: var(--glow-red);
 }
+
+/* ── Navegación inferior ─────────────────────────────────────────────────── */
+
+.bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 0 max(env(safe-area-inset-right), calc((100vw - 520px) / 2))
+    env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100vw - 520px) / 2));
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  padding: 6px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nav-item[aria-current='page'] {
+  color: var(--text);
+}
+
+.nav-item[aria-current='page'] svg {
+  color: var(--blue);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--blue) 70%, transparent));
+}
+
+/* Línea arriba del ítem activo: marca que no depende solo del color. */
+.nav-item[aria-current='page']::before {
+  position: absolute;
+  top: -1px;
+  right: 20%;
+  left: 20%;
+  height: 2px;
+  background-color: var(--blue);
+  box-shadow: var(--glow-blue);
+  content: '';
+}
+
+/* ── Barra de sesión en curso, sobre la navegación ───────────────────────── */
+
+.session-bar {
+  position: fixed;
+  right: max(calc(16px + env(safe-area-inset-right)), calc((100vw - 488px) / 2));
+  bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+  left: max(calc(16px + env(safe-area-inset-left)), calc((100vw - 488px) / 2));
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--blue);
+  box-shadow: var(--glow-blue);
+}
+
+.session-bar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ── Cuadro de confirmación ──────────────────────────────────────────────── */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgb(0 0 0 / 60%);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 488px;
+  padding: 24px 16px 16px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
