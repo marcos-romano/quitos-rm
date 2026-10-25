@@ -1,6 +1,7 @@
 // Panel de prueba temporal (paso 2.6): cargar máximos y ver el cálculo de cargas
 // en el iPhone. Se reemplaza por la pantalla de Máximos en el paso 7.
 
+import { liveQuery } from 'dexie'
 import { useEffect, useState } from 'react'
 import { db } from '../db/appDb.ts'
 import { createExercise, listExercises } from '../db/exercises.ts'
@@ -42,17 +43,20 @@ export function MaxesTestPanel() {
 
   useEffect(() => {
     let cancelled = false
-    void Promise.all([listExercises(db), getSettings(db)]).then(([list, loaded]) => {
-      if (cancelled) return
-      setExercises(list)
-      setSettings(loaded)
-      setSelectedId((id) => id ?? list[0]?.id)
+    void getSettings(db).then((loaded) => {
+      if (!cancelled) setSettings(loaded)
     })
     void requestPersistentStorage().then((status) => {
       if (!cancelled) setPersistence(status)
     })
+    // La lista se actualiza sola cuando cambia el catálogo, por ejemplo al importar un programa.
+    const subscription = liveQuery(() => listExercises(db)).subscribe((list) => {
+      setExercises(list)
+      setSelectedId((id) => id ?? list[0]?.id)
+    })
     return () => {
       cancelled = true
+      subscription.unsubscribe()
     }
   }, [])
 

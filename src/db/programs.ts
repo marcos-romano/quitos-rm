@@ -1,5 +1,6 @@
 // Programas: cada uno se guarda como una sola ficha completa (semanas, días, bloques...).
 
+import { buildProgram, type FileProgram, type ImportPlan } from '../domain/programFile.ts'
 import type { Id, Program } from '../domain/types.ts'
 import type { QuitosDb } from './db.ts'
 import { getSettings, updateSettings } from './settings.ts'
@@ -31,5 +32,22 @@ export async function deleteProgram(db: QuitosDb, id: Id): Promise<void> {
     if ((await getSettings(db)).activeProgramId === id) {
       await updateSettings(db, { activeProgramId: undefined })
     }
+  })
+}
+
+/**
+ * Guarda un programa leído de un archivo (ver programFile.ts) como programa nuevo:
+ * nunca reemplaza otro. Agrega al catálogo los ejercicios que faltan y, si no había
+ * programa activo, deja este como activo. Todo o nada: si algo falla, no queda nada a medias.
+ */
+export async function importProgram(db: QuitosDb, file: FileProgram, now: Date = new Date()): Promise<ImportPlan> {
+  return db.transaction('rw', db.exercises, db.programs, db.settings, async () => {
+    const plan = buildProgram(file, await db.exercises.toArray(), now)
+    await db.exercises.bulkAdd(plan.newExercises)
+    await db.programs.add(plan.program)
+    if ((await getSettings(db)).activeProgramId === undefined) {
+      await updateSettings(db, { activeProgramId: plan.program.id })
+    }
+    return plan
   })
 }

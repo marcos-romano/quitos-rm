@@ -5,13 +5,14 @@ Parte de situación para que una conversación nueva de Claude Code siga el trab
 - `CLAUDE.md`: qué es la app (especificación). `DISENO.md`: cómo se ve (fuente de verdad del diseño). Este archivo: dónde estamos, cómo se trabaja y qué sigue. No repite lo que ya dicen esos dos.
 - Se actualiza al cerrar cada tanda de trabajo y antes de terminar una conversación: secciones 1, 6 y 7, más lo que haya cambiado.
 
-**Última actualización:** 25/10/2026, al cerrar la tanda 4.2. Versión publicada: 0.8.0.
+**Última actualización:** 25/10/2026, al cerrar la tanda 4.3. Versión publicada: 0.9.0.
 
 ## 1. Dónde estamos
 
-- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.8.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
+- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.9.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
 - **Versión 1, pasos 1, 2 y 3:** terminados y probados en el iPhone (fundación, modelo de datos con cálculo y base local, diseño y componentes base).
-- **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación con las cinco pestañas, publicada) y la 4.2 (motor del plan con tests, sin cambios visibles). Sigue la 4.3: cargar el programa del entrenador.
+- **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación con las cinco pestañas), la 4.2 (motor del plan con tests) y la 4.3 (importar el programa del entrenador). Sigue la 4.4: pantallas de programa, semana y día.
+- **A cargo del usuario:** pasar `referencias/programa-entrenador.json` al iPhone por AirDrop e importarlo desde Más. Preguntarle si lo hizo y si salió bien.
 
 ## 2. Cómo trabajar con el usuario
 
@@ -47,6 +48,8 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - `.claude/launch.json` tiene `quitos-rm-dev` y `quitos-rm-preview`. Hay que navegar a `/quitos-rm/` y usar el tamaño `mobile` (375 × 812).
   - Las capturas en tamaño mobile salen comprimidas. Conviene medir con JavaScript (`getBoundingClientRect`) y usar `zoom` sobre una región.
   - Al terminar: volver al tamaño de escritorio y parar el servidor.
+  - Para probar "Importar programa": el servidor de desarrollo sirve `/quitos-rm/referencias/programa-entrenador.json`. Con JavaScript se arma un `File`, se asigna con `DataTransfer` al `input[type=file]` y se dispara `change`.
+- **Leer un PDF:** no hay librerías de PDF instaladas y Swift no compila (versiones del SDK). Funciona `osascript -l JavaScript` con PDFKit: `selectionsByLine` da cada renglón con su posición, y `selectionForRect` recorta el texto por columna.
 - **Entorno:** Mac Intel con macOS 15, Node 24, npm 11, `gh` con sesión iniciada como `marcos-romano` y git con el email privado corto.
   - La Terminal del usuario arranca en su carpeta personal: hay que hacer `cd` a la carpeta del proyecto, con comillas porque el nombre tiene espacios.
   - El `(base)` del prompt es de Anaconda y no afecta.
@@ -70,22 +73,26 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza "1O"), `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
   - `names.ts`: limpia y normaliza nombres, sin tildes ni mayúsculas.
   - `settings.ts`: ajustes por defecto (redondeo de 2,5 kg y recordatorio a los 14 días).
+  - `programFile.ts`: el archivo de programa en JSON (`format: "quitos-rm-program"`, `version: 1`), con los ejercicios por nombre y cada serie como `{ "reps" | "seconds" | "meters", "percent" | "kg", "restSec" }`.
+    - `parseProgramFile` revisa todo y junta los errores con su ubicación ("Semana 2 · Día 3 · Fuerza 1 · Dominadas · serie 4: …").
+    - `buildProgram` busca cada ejercicio en el catálogo con `normalizeName` y crea los que faltan, con la medida de su primera serie. `summarizeProgram` cuenta semanas, días, ejercicios y series.
   - `rpe.ts`: tono por valor (1 a 5 verde, 6 a 8 neutro, 9 y 10 rojo) y descripciones. El 5 sale verde pero se describe como "Moderado".
   - `coachDay1Week1.fixture.ts`: el Día 1 · Semana 1 del entrenador, solo para tests.
 - `src/db/`: base local IndexedDB con Dexie. Las funciones reciben `db` como parámetro, para poder probarlas.
   - `db.ts`: esquema versión 1 (programs, exercises con `&nameKey` único, maxes, sessions y settings). Al crearse la base carga "Dominadas" con incremento de 1,25 kg.
   - `appDb.ts`: la base única que usa la app.
-  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts` (`deleteProgram` no toca las sesiones y saca el programa activo si era ese), `settings.ts` y `persist.ts` (pide almacenamiento persistente).
+  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts` (`deleteProgram` no toca las sesiones y saca el programa activo si era ese; `importProgram` guarda siempre un programa nuevo, en una sola transacción, y lo deja activo si no había otro), `settings.ts` y `persist.ts` (pide almacenamiento persistente).
   - `db.test.ts`: usa `fake-indexeddb`, que se importa primero, y una base nueva por test. Incluye "cerrar y reabrir la app".
 - `src/ui/`: pantallas.
   - `App.tsx` (está en `src/`, no en `src/ui/`): la pestaña activa y la `BottomNav`. Las cinco pantallas quedan armadas aunque no se vean (atributo `hidden`), así cambiar de pestaña no pierde nada, y cada pestaña recuerda hasta dónde se bajó.
   - `screens/`: una pantalla por pestaña.
     - `HomeScreen` (título "quitos_RM"), `ProgramScreen` e `HistoryScreen`: textos provisorios ("Llega en el paso 6", "en las próximas tandas del paso 4", "en el paso 7").
     - `MaxesScreen`: envuelve el panel de prueba.
-    - `MoreScreen`: versión, "Lista para usar sin conexión" y el botón "Ver componentes", que abre el catálogo como pantalla interna con "←".
+    - `MoreScreen`: "Importar programa" (elige un `.json` y abre la revisión), versión, "Lista para usar sin conexión" y "Ver componentes", que abre el catálogo como pantalla interna con "←".
+    - `ImportProgramScreen`: revisión antes de guardar (programa, resumen, ejercicios nuevos y existentes) o la lista de errores. Mirar no guarda nada.
   - `usePwa.ts`: registra el service worker, dice si la app funciona sin conexión y si hay versión nueva (modo `prompt`, sin recargas solas), y busca versión nueva al volver a primer plano.
   - `UpdatePrompt.tsx`: aviso "Nueva versión · Actualizar", fijo sobre la navegación.
-  - `MaxesTestPanel.tsx`: **temporal** hasta el paso 7. Sirve para cargar máximos y probar el cálculo.
+  - `MaxesTestPanel.tsx`: **temporal** hasta el paso 7. Sirve para cargar máximos y probar el cálculo. La lista de ejercicios usa `liveQuery` de Dexie: se actualiza sola al importar.
   - `ComponentCatalog.tsx`: **temporal**. Muestra cada componente con sus estados.
   - `components/`: piezas base, con estilos en `components.css`.
     - `Button` (variantes `primary`, `secondary` y `destructive`; acepta `ref`) y `TextField` (con `error`).
@@ -127,19 +134,18 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - **Sin marca "por lado":** el número cargado es el que vale. El usuario sabe si es por lado o en total. Al transcribir el PDF, "6/6" se carga como 6 y "15"/15"" como 15 s (se le avisó; puede pedir el total).
   - **Sin RPE en el plan:** el RPE es solo el que el usuario marca al terminar cada ejercicio (paso 5).
 - **Programa del entrenador:** se carga como **ejemplo** para avanzar; el Excel sigue en la Versión 2.
-  - Claude lo transcribe desde el PDF de `referencias/` a `referencias/programa-entrenador.json`, que nunca se publica y no lleva nombres de personas.
-  - Se agrega un botón **"Importar programa"** en la pestaña Más. El usuario pasa el archivo al iPhone por AirDrop o Archivos.
+  - **Hecho (tanda 4.3):** transcripto a `referencias/programa-entrenador.json` (nunca se publica, sin nombres de personas): 4 semanas, 16 días, 37 ejercicios y 686 series. Las pruebas de `programFile.test.ts` lo revisan cuando el archivo está.
+  - Para cambiarlo, se edita el JSON directamente (el script que lo generó era temporal).
   - **Resuelto, no volver a mencionarlo:** "1O" es 10.
-  - **Erratas obvias: se corrigen con criterio, sin consultar** (el usuario no quiere que se le pregunte lo evidente): "65" sin signo en una columna de porcentajes es 65%; "HIP TRHUST" es "Hip thrust"; un descanso que falta en las semanas 2 a 4 de un bloque es el mismo de la semana 1.
-  - **Dudas reales para consultar** en la 4.3, cada una con la interpretación que propone Claude:
-    - Cantidades de valores que no cuadran con las series de cada semana (por ejemplo "Remo invertido" del Día 2, con 13 valores para 4 semanas).
-    - En el Día 4, un ejercicio llamado "QUE ME IMPORTA", que parece un comodín.
+  - **Erratas obvias corregidas con criterio, sin consultar** (el usuario no quiere que se le pregunte lo evidente): "65" sin signo es 65%; "HIP TRHUST" es "Hip thrust"; los descansos que faltan en las semanas 2 a 4 del Día 4 son los de la semana 1; tildes y mayúsculas.
+  - Las cantidades que parecían no cuadrar se resolvieron con la posición de cada columna del PDF. Por ejemplo, "Remo invertido TRX o barra" (Día 2) tiene 4 series en la semana 1 y 3 en las demás.
+  - **Fiel al PDF:** los nombres quedan como los escribió el entrenador, también "Que me importa" (Día 4). "Remo invertido TRX o barra" (Día 2) y "Remo invertido TRX" (Día 4), y "Pasaje de valla" (Día 2) y "Correctivo pasaje de valla" (Día 4), son ejercicios distintos en el catálogo. Se pueden unificar en el editor. "Correctivo buda cobra" en la semana 4 termina con una serie de 4, como en el PDF.
 
 **Tandas.**
 
 1. **4.1, estructura real: terminada** (versión 0.8.0). Ver el mapa del código.
 2. **4.2, lógica del plan con tests: terminada.** Ver `plan.ts` en el mapa del código. No cambia nada visible, así que se subió sin cambiar la versión.
-3. **4.3, importar el programa de ejemplo:** transcripción, botón en Más y validación. Así las pantallas siguientes se prueban con datos reales.
+3. **4.3, importar el programa de ejemplo: terminada** (versión 0.9.0).
 4. **4.4, pantallas de programa, semana y día:**
    - Lista de programas con el activo marcado. Al crear el primero, queda activo (`activeProgramId` en ajustes).
    - Semanas, con agregar y duplicar.
@@ -166,5 +172,5 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 1. Leer `CLAUDE.md`, `DISENO.md` y este archivo (los dos primeros se cargan solos y este se importa desde `CLAUDE.md`).
 2. Confirmar el estado con `git log --oneline | head` y `npm test`. Tienen que pasar todos los tests.
 3. Resumirle al usuario en tres o cuatro líneas dónde estamos.
-4. Con eso, proponer el arranque de la tanda 4.3 y esperar el "sí".
+4. Preguntar si importó el programa en el iPhone. Con eso, proponer el arranque de la tanda 4.4 y esperar el "sí".
 5. Al cerrar cada tanda, actualizar este archivo y hacer commit.

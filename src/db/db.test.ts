@@ -3,11 +3,12 @@ import 'fake-indexeddb/auto'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { coachDay1Week1 } from '../domain/coachDay1Week1.fixture.ts'
 import { prescribedLoad, resolveIncrement } from '../domain/load.ts'
+import type { FileProgram } from '../domain/programFile.ts'
 import type { Program, Session } from '../domain/types.ts'
 import { createDatabase, type QuitosDb } from './db.ts'
 import { createExercise, findExerciseByName, listExercises } from './exercises.ts'
 import { addMax, getCurrentMax, getMaxHistory } from './maxes.ts'
-import { deleteProgram, getProgram, listPrograms, saveProgram } from './programs.ts'
+import { deleteProgram, getProgram, importProgram, listPrograms, saveProgram } from './programs.ts'
 import { getSettings, updateSettings } from './settings.ts'
 
 // Cada prueba usa una base nueva y la borra al terminar.
@@ -209,6 +210,64 @@ describe('programas', () => {
 
     expect((await getSettings(db)).activeProgramId).toBe('programa-fuerza')
     expect((await listPrograms(db)).map((p) => p.id)).toEqual(['programa-fuerza'])
+  })
+})
+
+describe('importar un programa', () => {
+  /** Un día con Dominadas (que ya está en el catálogo) y un ejercicio nuevo. */
+  function sampleFile(name = 'Plan de fuerza'): FileProgram {
+    const sets = [{ measure: { kind: 'reps', value: 8 }, load: { kind: 'percent', percent: 65 } }] as const
+    return {
+      name,
+      weeks: [
+        {
+          number: 1,
+          days: [
+            {
+              name: 'Día 1',
+              blocks: [
+                {
+                  name: 'Fuerza 1',
+                  type: 'strength',
+                  restSec: 180,
+                  exercises: [
+                    { exercise: 'DOMINADAS', sets: [...sets] },
+                    { exercise: 'Press landmine', sets: [...sets] },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }
+  }
+
+  test('se guarda como programa nuevo, activo si no había otro', async () => {
+    const { program, newExercises } = await importProgram(db, sampleFile())
+
+    expect(await getProgram(db, program.id)).toEqual(program)
+    expect((await getSettings(db)).activeProgramId).toBe(program.id)
+    expect(newExercises.map((e) => e.name)).toEqual(['Press landmine'])
+    expect((await listExercises(db)).map((e) => e.name)).toEqual(['Dominadas', 'Press landmine'])
+  })
+
+  test('usa los ejercicios del catálogo, con su redondeo propio', async () => {
+    const { program } = await importProgram(db, sampleFile())
+
+    const dominadas = await findExerciseByName(db, 'Dominadas')
+    expect(program.weeks[0].days[0].blocks[0].exercises[0].exerciseId).toBe(dominadas!.id)
+    expect(dominadas!.roundingIncrement).toBe(1.25)
+  })
+
+  test('importar otro no reemplaza el primero ni cambia el activo', async () => {
+    const first = await importProgram(db, sampleFile())
+    const second = await importProgram(db, sampleFile('Plan de noviembre'))
+
+    expect((await listPrograms(db)).map((p) => p.id).sort()).toEqual([first.program.id, second.program.id].sort())
+    expect((await getSettings(db)).activeProgramId).toBe(first.program.id)
+    expect(second.newExercises).toEqual([])
+    expect(await listExercises(db)).toHaveLength(2)
   })
 })
 

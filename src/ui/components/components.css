@@ -165,6 +165,7 @@
 }
 
 .text-error {
+  margin: 0;
   font-size: 14px;
   color: var(--red);
   text-shadow: var(--text-glow-red);
