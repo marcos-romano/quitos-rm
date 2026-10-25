@@ -1,6 +1,10 @@
 # quitos_RM: especificación de la aplicación
 
-Versión 1.0, lista para comenzar la construcción. Se sigue ajustando a medida que se toman decisiones nuevas.
+Versión 1.1. Se sigue ajustando a medida que se toman decisiones nuevas.
+
+**Estado actual y cómo retomar:** cada conversación nueva arranca con el parte de situación de `CONTEXTO.md` (dónde quedó el proyecto, qué sigue y cómo trabajar con el usuario), que se importa acá:
+
+@CONTEXTO.md
 
 **Nombre de la app:** quitos_RM, escrito exactamente así (minúsculas, guion bajo y las letras RM en mayúsculas). Es el nombre que se muestra debajo del ícono en el iPhone y dentro de la app. Identificador técnico (repositorio y paquete): `quitos-rm`. Repositorio: `https://github.com/marcos-romano/quitos-rm`. La carpeta local conserva el nombre `quitos_RM`.
 
@@ -19,7 +23,7 @@ Aplicación personal para planificar y registrar rutinas de gimnasio. La usa una
 - Cada bloque de entrenamiento funciona como una superserie: los ejercicios del bloque se trabajan en rondas (una serie de cada ejercicio por ronda) y el descanso se aplica al terminar la ronda. Esto vale para todos los bloques (potencia, fuerza, estructura, extras).
 - No hay temporizador ni cronómetro. El descanso se muestra únicamente como dato.
 - La percepción del esfuerzo usa la escala RPE de 1 a 10, con una nota opcional. Es solo ilustrativa: no entra en ningún cálculo.
-- Las series son individuales: cada una tiene sus propias repeticiones, carga y descanso. Un atajo como "4 x 12" genera series iguales, que después se pueden editar una por una.
+- Las series son individuales: cada una tiene sus propias repeticiones, carga y descanso, y se carga y se muestra siempre por separado. No hay atajos ni resúmenes del tipo "4 x 12". Al agregar una serie, arranca como copia de la anterior y se edita.
 - La carga de una serie puede ser un porcentaje del máximo del ejercicio, un peso fijo en kg o libre (sin carga prescripta).
 - En dominadas el 100% es una carga agregada, como en cualquier ejercicio de musculación. El peso corporal no interviene en ningún cálculo.
 - Al abrir la app aparece un botón con la semana y el día que corresponde entrenar (por ejemplo "Semana 3 · Día 2"), calculado a partir de los días ya completados. El contenido del día se ve al tocar el botón, no en el inicio.
@@ -30,15 +34,15 @@ Aplicación personal para planificar y registrar rutinas de gimnasio. La usa una
 ## 3. Decisiones técnicas
 
 - Lenguaje: TypeScript. Interfaz: React. Herramienta de desarrollo: Vite.
-- PWA con service worker (por ejemplo con vite-plugin-pwa), instalable en iOS y funcional sin conexión.
-- Almacenamiento: IndexedDB (por ejemplo con Dexie). Se pide almacenamiento persistente al navegador cuando esté disponible.
+- PWA con service worker (vite-plugin-pwa), instalable en iOS y funcional sin conexión. Las versiones nuevas se aplican solo cuando el usuario toca "Actualizar".
+- Almacenamiento: IndexedDB con Dexie. Se pide almacenamiento persistente al navegador cuando esté disponible.
 - Excel: ExcelJS o SheetJS, a decidir en la implementación según cuál se instale sin problemas.
 - Tests: Vitest para la lógica de cálculo, de importación, de selección del próximo día y de conservación del estado de la sesión.
 - Publicación: GitHub Pages, en `https://marcos-romano.github.io/quitos-rm/`. La app funciona bajo la subruta `/quitos-rm/`. Se publica automáticamente con GitHub Actions al subir cambios a `main`, solo si pasan los tests.
 - Repositorio público (GitHub Pages gratis lo exige). Los datos de entrenamiento no se publican: viven en el iPhone. La carpeta `referencias/` está en `.gitignore` y nunca se sube.
 - Los commits usan el email privado de GitHub en su versión corta (`marcos-romano@users.noreply.github.com`), no el email personal.
-- Tipografía Jost autoalojada dentro del proyecto (por ejemplo con el paquete fontsource de Jost, en su versión variable si está disponible), no cargada desde un servicio externo, para que la app funcione sin conexión.
-- Íconos de trazo fino con una librería única y consistente (por ejemplo Lucide).
+- Tipografía Jost autoalojada dentro del proyecto (paquete `@fontsource-variable/jost`), no cargada desde un servicio externo, para que la app funcione sin conexión.
+- Íconos de trazo fino de una sola librería: Lucide (`lucide-react`).
 - Sin backend, sin analíticas y sin servicios externos.
 - Interfaz en español rioplatense (es-AR): decimales con coma ("87,5 kg") y fechas en formato dd/mm/aaaa. Los identificadores del código van en inglés.
 
@@ -116,7 +120,7 @@ Navegación principal con una barra inferior: Inicio, Programa, Máximos, Histor
 - Navegación programa > semana > día > bloque > ejercicio > series.
 - Crear, editar, duplicar, reordenar y eliminar en cada nivel. Eliminar pide confirmación.
 - Duplicar semana completa, para armar variaciones a partir de una existente.
-- Atajo "N x M" para generar N series iguales, editables individualmente después.
+- Las series se agregan de a una: cada serie nueva arranca como copia de la anterior y se edita. No hay atajo "N x M".
 - Edición de cada serie por separado: medida, carga (porcentaje, kg o libre), descanso y nota.
 
 ### 6.3 Entrenamiento (sesión)
@@ -191,18 +195,18 @@ Reglas de importación:
 
 El programa del entrenador (4 días, 4 semanas) es el caso de prueba de referencia. El usuario lo va a pasar a esta plantilla.
 
-Una notación compacta en una sola celda ("5x95, 4x97, 2x102") queda para una fase posterior.
+No se usa notación compacta en una sola celda (por ejemplo "5x95, 4x97"): siempre una fila por serie.
 
 ## 8. Diseño
 
 La definición completa está en `DISENO.md`, que es la fuente de verdad de colores, tipografía y componentes. Resumen:
 
 - **Nombre:** quitos_RM.
-- **Tipografía:** Jost.
+- **Tipografía:** Jost fina (peso 300) en toda la app, con cifras de ancho fijo.
 - **Fondo:** negro medianoche `#0A0B0F`. **Texto:** blanco nieve `#F7F9FB`.
-- **Acentos:** verde y rojo en la línea de los que usa TradingView por defecto, y un azul francia cercano al ultramar.
-- Estética futurista pero limpia: trazos finos, bordes sutiles, poco adorno, mucho espacio y números grandes y legibles.
-- Mobile-first para iPhone, en vertical, respetando las áreas seguras del dispositivo. Botones grandes (objetivo táctil de al menos 44 puntos), uso cómodo con una mano y alto contraste para leerse en el gimnasio.
+- **Acentos:** verde `#089981` y rojo `#F23645` (los de TradingView) y azul `#243AB8` (entre azul francia y medianoche), con un resplandor neón suave. Elegidos por el usuario en su iPhone.
+- Estética futurista pero limpia: letra fina, sin tarjetas (secciones separadas por líneas finas), esquinas rectas, poco adorno, mucho espacio y números grandes y legibles.
+- Mobile-first para iPhone, en vertical, respetando las áreas seguras del dispositivo. Botones de al menos 48 px de alto (objetivo táctil de al menos 44 puntos), uso cómodo con una mano y alto contraste para leerse en el gimnasio.
 - El color nunca es el único portador de significado: siempre se acompaña de ícono, tachado u otra marca, porque el rojo y el verde se confunden entre sí en el tipo de daltonismo más frecuente.
 - No se toma como referencia el estilo visual del PDF original del entrenador.
 
@@ -222,13 +226,16 @@ La definición completa está en `DISENO.md`, que es la fuente de verdad de colo
 ## 10. Reglas de trabajo para Claude Code
 
 - La persona que usa el proyecto no sabe programar. Se explica en lenguaje simple qué se hizo y por qué, y cada concepto nuevo se presenta en dos o tres líneas.
-- Antes de cambios grandes se presenta el plan y se espera confirmación.
+- Antes de cambios grandes se presenta el plan y se espera confirmación. Antes de cada subpaso se explica qué se va a hacer y se espera el "sí"; si un comando puede generar dudas, se explica su motivo antes de ejecutarlo.
+- Cuando el usuario hace una pregunta, se responde con palabras: no se ejecutan comandos ni se cambia nada hasta que pida una acción.
+- Las decisiones visuales se toman viendo: se publica una muestra temporal y el usuario la mira en su iPhone.
 - Se trabaja en pasos pequeños: una funcionalidad por vez, probada antes de pasar a la siguiente.
 - Se prefiere la solución más simple que cumpla el objetivo.
 - No se agregan dependencias sin explicar para qué sirven.
 - La lógica de cálculo vive en un módulo separado de la interfaz y tiene tests. Los tests se ejecutan antes de cada commit.
 - Commits de git frecuentes, con mensajes descriptivos en español.
-- Cada vez que se agrega algo, se indica cómo probarlo en la Mac y cómo verlo en el iPhone.
+- Cada vez que se agrega algo, se indica cómo probarlo en la Mac y cómo verlo en el iPhone. Cada publicación sube la versión en `package.json`, así el iPhone muestra "Actualizar" y la versión nueva.
+- Al cerrar cada tanda de trabajo, y antes de terminar una conversación, se actualiza `CONTEXTO.md` y se hace commit.
 - Si algo de esta especificación es ambiguo o se contradice, se pregunta antes de decidir.
 - Este archivo se actualiza cuando se toman decisiones nuevas, con aprobación del usuario.
 - Nunca se borran ni se modifican datos del usuario sin confirmación.
@@ -239,7 +246,7 @@ La definición completa está en `DISENO.md`, que es la fuente de verdad de colo
 
 1. Archivos de referencia del usuario (Word y Excel) con la disposición deseada de los ejercicios. Ajustan las secciones 6.3 y 7 y se esperan antes de construir la sesión de entrenamiento y la importación de Excel.
 2. Ícono de la app. Provisoriamente, una versión simple con fondo `#0A0B0F`.
-3. Ajuste fino de los colores verde, rojo y azul al verlos en pantallas reales (`DISENO.md`, sección 2).
+3. ~~Ajuste fino de los colores~~: resuelto. Verde `#089981`, rojo `#F23645` y azul `#243AB8`, con resplandor neón, elegidos en el iPhone (`DISENO.md` §2).
 4. ~~Cifras tabulares de Jost~~: resuelto. Jost las tiene y se usan en toda la app (`DISENO.md` §3).
 5. Contenido de las celdas del resumen de RPE por día (sección 6.1): por ahora solo el RPE, con repeticiones y kilos reales al tocar la celda. Se puede cambiar al ver la pantalla.
 6. ~~Botón del día en Inicio~~: resuelto. Mismo tamaño que los demás botones y texto "Semana 3 · Día 2", con punto medio (`DISENO.md` §5).
