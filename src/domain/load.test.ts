@@ -142,10 +142,11 @@ describe('caso real: Día 1 · Semana 1 del programa del entrenador', () => {
     expect(loadsOf('potencia-arranque')).toEqual(['free', 'free', 'free', 'free'])
   })
 
-  test('representa series por lado, en segundos y en metros', () => {
+  test('representa series en repeticiones, en segundos y en metros', () => {
     const exercises = coachDay1Week1.blocks.flatMap((block) => block.exercises)
     const firstSet = (id: string) => exercises.find((e) => e.id === id)!.sets[0]
-    expect(firstSet('fuerza-1-press-landmine')).toMatchObject({ measure: { kind: 'reps', value: 6 }, perSide: true })
+    // "6/6" en el PDF: se carga el número de un lado.
+    expect(firstSet('fuerza-1-press-landmine').measure).toEqual({ kind: 'reps', value: 6 })
     expect(firstSet('fuerza-2-isquio-isometrico').measure).toEqual({ kind: 'time', value: 30 })
     expect(firstSet('estructura-caminata-granjero').measure).toEqual({ kind: 'distance', value: 15 })
   })

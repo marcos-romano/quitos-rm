@@ -5,16 +5,13 @@ Parte de situación para que una conversación nueva de Claude Code siga el trab
 - `CLAUDE.md`: qué es la app (especificación). `DISENO.md`: cómo se ve (fuente de verdad del diseño). Este archivo: dónde estamos, cómo se trabaja y qué sigue. No repite lo que ya dicen esos dos.
 - Se actualiza al cerrar cada tanda de trabajo y antes de terminar una conversación: secciones 1, 6 y 7, más lo que haya cambiado.
 
-**Última actualización:** 25/10/2026, al cerrar la tanda 4.1. Versión publicada: 0.8.0.
+**Última actualización:** 25/10/2026, al cerrar la tanda 4.2. Versión publicada: 0.8.0.
 
 ## 1. Dónde estamos
 
 - **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.8.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
 - **Versión 1, pasos 1, 2 y 3:** terminados y probados en el iPhone (fundación, modelo de datos con cálculo y base local, diseño y componentes base).
-- **Paso 4 (editor del plan):** en curso. La tanda 4.1 (navegación con las cinco pestañas) está terminada y publicada. Sigue la 4.2.
-- **Preguntas abiertas al usuario** (hacerlas antes de la tanda 4.2):
-  - **Orden de las tandas:** ¿se carga el programa del entrenador antes que las pantallas del editor (opción A, recomendada) o después? No la contestó.
-  - **Medida:** ¿el programa tiene ejercicios por tiempo o por distancia, o todo va en repeticiones? Preguntó qué era "medida" y no contestó. Se ofreció revisar el PDF del entrenador.
+- **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación con las cinco pestañas, publicada) y la 4.2 (motor del plan con tests, sin cambios visibles). Sigue la 4.3: cargar el programa del entrenador.
 
 ## 2. Cómo trabajar con el usuario
 
@@ -63,7 +60,12 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 ## 4. Mapa del código
 
 - `src/domain/`: lógica pura, sin pantallas ni base de datos. Cada archivo tiene su `*.test.ts` al lado.
-  - `types.ts`: modelo completo. Los tipos del registro (`Session`, `PerformedSet`, `ExerciseEffort`) son provisorios hasta el paso 5. `PrescribedSet` todavía tiene `perSide` y `note`, que se sacan en la tanda 4.2 (sección 6).
+  - `types.ts`: modelo completo. Los tipos del registro (`Session`, `PerformedSet`, `ExerciseEffort`) son provisorios hasta el paso 5. `PrescribedSet` no tiene nota ni "por lado" (sección 6).
+  - `plan.ts`: el motor del editor. Cada función recibe un programa y devuelve uno nuevo, sin tocar el original.
+    - Rutas por ids: `WeekPath`, `DayPath`, `BlockPath`, `ExercisePath` (con `blockExerciseId`, el ejercicio dentro del bloque) y `SetPath`.
+    - Por nivel: `createProgram`, `updateProgram`, `duplicateProgram`, `addWeek`, `nextWeekNumber`, `updateWeek`, `addDay` (nombre "Día N"), `updateDay`, `addBlock`, `updateBlock`, `addExercise`, `updateExercise`, `addSet` (copia de la anterior; la primera usa `FIRST_SET_VALUE`: 10 repeticiones, 30 s o 15 m, con carga libre) y `updateSet`.
+    - En cualquier nivel, según la ruta: `moveItem` (-1 o +1; en los extremos no hace nada), `removeItem` y `duplicateItem`. La copia de una semana va al final con el número siguiente; la de día y bloque, justo después y con "(copia)"; la de ejercicio y serie, justo después.
+    - Una ruta que no existe da error.
   - `load.ts`: cálculo de carga en enteros (centésimas de kg y décimas de porcentaje), con empates hacia arriba. También `resolveIncrement` y las constantes de redondeo.
   - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza "1O"), `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
   - `names.ts`: limpia y normaliza nombres, sin tildes ni mayúsculas.
@@ -73,7 +75,7 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 - `src/db/`: base local IndexedDB con Dexie. Las funciones reciben `db` como parámetro, para poder probarlas.
   - `db.ts`: esquema versión 1 (programs, exercises con `&nameKey` único, maxes, sessions y settings). Al crearse la base carga "Dominadas" con incremento de 1,25 kg.
   - `appDb.ts`: la base única que usa la app.
-  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts`, `settings.ts` y `persist.ts` (pide almacenamiento persistente).
+  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts` (`deleteProgram` no toca las sesiones y saca el programa activo si era ese), `settings.ts` y `persist.ts` (pide almacenamiento persistente).
   - `db.test.ts`: usa `fake-indexeddb`, que se importa primero, y una base nueva por test. Incluye "cerrar y reabrir la app".
 - `src/ui/`: pantallas.
   - `App.tsx` (está en `src/`, no en `src/ui/`): la pestaña activa y la `BottomNav`. Las cinco pantallas quedan armadas aunque no se vean (atributo `hidden`), así cambiar de pestaña no pierde nada, y cada pestaña recuerda hasta dónde se bajó.
@@ -115,33 +117,28 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 - **Guardado automático:** no hay botón "Guardar".
 - **Modo "Editar":** en cada pantalla, un botón "Editar" muestra los controles para reordenar (flechas ↑ ↓), duplicar y eliminar. Así, mirar el plan nunca lo modifica. Eliminar siempre pasa por `ConfirmDialog`.
 - **Volver atrás:** con un botón "←" arriba de cada pantalla. No se usa ninguna librería de rutas.
+- **Números de semana:** cada semana conserva el número que le pone el usuario. La app nunca renumera sola al mover, borrar o duplicar: el usuario prefiere ese margen. El orden de la lista es independiente del número.
+- **Orden de las tandas:** el usuario lo dejó a criterio de Claude. Se carga el programa del entrenador (4.3) antes de las pantallas del editor (4.4 y 4.5).
 - **Series:** **nunca** "N x M". Cada serie se carga y se muestra por separado. "Agregar serie" crea una copia de la anterior, que después se edita. Tampoco hay notación compacta en Excel.
 - **Carga calculada:** si la carga es un porcentaje y el ejercicio tiene máximo, al lado se muestran los kg calculados (`LoadValue`).
 - **Qué se carga en cada serie** (decidido en la segunda conversación, ya escrito en `CLAUDE.md` 1.2):
-  - Medida (repeticiones), carga y descanso.
+  - Medida, carga y descanso. La medida son repeticiones, segundos o metros, y se muestra en el mismo lugar ("8", "30 s", "15 m"). En el PDF van por tiempo el isquio isométrico (30 s) y la plancha Copenhagen (15 s); por distancia, las caminatas de granjero y de hombros (15 m).
   - **Sin nota por serie:** una sola nota por ejercicio, opcional.
-  - **Sin marca "por lado":** el número cargado es el que vale. El usuario sabe si es por lado o en total.
+  - **Sin marca "por lado":** el número cargado es el que vale. El usuario sabe si es por lado o en total. Al transcribir el PDF, "6/6" se carga como 6 y "15"/15"" como 15 s (se le avisó; puede pedir el total).
   - **Sin RPE en el plan:** el RPE es solo el que el usuario marca al terminar cada ejercicio (paso 5).
 - **Programa del entrenador:** se carga como **ejemplo** para avanzar; el Excel sigue en la Versión 2.
   - Claude lo transcribe desde el PDF de `referencias/` a `referencias/programa-entrenador.json`, que nunca se publica y no lleva nombres de personas.
   - Se agrega un botón **"Importar programa"** en la pestaña Más. El usuario pasa el archivo al iPhone por AirDrop o Archivos.
-  - El PDF tiene inconsistencias que hay que **consultar al usuario** antes de cerrar la transcripción:
-    - "1O" con letra O.
-    - Porcentajes escritos "65" sin el signo.
-    - Cantidades de valores que no cuadran con las series de cada semana.
-    - Descansos que solo figuran en la semana 1 de algunos bloques del Día 4.
+  - **Resuelto, no volver a mencionarlo:** "1O" es 10.
+  - **Erratas obvias: se corrigen con criterio, sin consultar** (el usuario no quiere que se le pregunte lo evidente): "65" sin signo en una columna de porcentajes es 65%; "HIP TRHUST" es "Hip thrust"; un descanso que falta en las semanas 2 a 4 de un bloque es el mismo de la semana 1.
+  - **Dudas reales para consultar** en la 4.3, cada una con la interpretación que propone Claude:
+    - Cantidades de valores que no cuadran con las series de cada semana (por ejemplo "Remo invertido" del Día 2, con 13 valores para 4 semanas).
     - En el Día 4, un ejercicio llamado "QUE ME IMPORTA", que parece un comodín.
-    - "HIP TRHUST" mal escrito.
 
-**Tandas.** El orden con la importación como 4.3 sigue sin confirmar (sección 1).
+**Tandas.**
 
 1. **4.1, estructura real: terminada** (versión 0.8.0). Ver el mapa del código.
-2. **4.2, lógica del plan con tests** (`src/domain/plan.ts`):
-   - Primero, sacar `perSide` y la `note` de `PrescribedSet` (y del fixture del entrenador y sus tests). La nota del ejercicio (`note` de `BlockExercise`) queda.
-   - Crear, editar, duplicar, reordenar y eliminar en cada nivel.
-   - Duplicar semana completa, con ids nuevos en toda la copia.
-   - Agregar serie como copia de la anterior.
-   - Confirmar con el usuario si los números de semana se renumeran al reordenar.
+2. **4.2, lógica del plan con tests: terminada.** Ver `plan.ts` en el mapa del código. No cambia nada visible, así que se subió sin cambiar la versión.
 3. **4.3, importar el programa de ejemplo:** transcripción, botón en Más y validación. Así las pantallas siguientes se prueban con datos reales.
 4. **4.4, pantallas de programa, semana y día:**
    - Lista de programas con el activo marcado. Al crear el primero, queda activo (`activeProgramId` en ajustes).
@@ -149,8 +146,8 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
    - Días, con nombre y texto de preparación.
 5. **4.5, pantallas de bloque, ejercicio y serie:**
    - Bloque: nombre, tipo, descanso y sus ejercicios. Cada ejercicio se elige del catálogo con búsqueda o se crea en el momento.
-   - Ejercicio: nota del entrenador y sus series.
-   - Serie: medida, por lado, carga, descanso propio y nota.
+   - Ejercicio: su nota (una sola, opcional) y sus series.
+   - Serie: medida, carga y descanso propio.
 
 ## 7. Pendientes generales
 
@@ -168,6 +165,6 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 
 1. Leer `CLAUDE.md`, `DISENO.md` y este archivo (los dos primeros se cargan solos y este se importa desde `CLAUDE.md`).
 2. Confirmar el estado con `git log --oneline | head` y `npm test`. Tienen que pasar todos los tests.
-3. Resumirle al usuario en tres o cuatro líneas dónde estamos y hacerle las **preguntas abiertas** de la sección 1.
-4. Con eso, proponer el arranque de la tanda 4.2 y esperar el "sí".
+3. Resumirle al usuario en tres o cuatro líneas dónde estamos.
+4. Con eso, proponer el arranque de la tanda 4.3 y esperar el "sí".
 5. Al cerrar cada tanda, actualizar este archivo y hacer commit.

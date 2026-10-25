@@ -10,17 +10,11 @@ function exercise(id: string, name: string, measure: MeasureKind = 'reps'): Exer
 }
 
 /** Una serie por cada valor de la lista; la posición es el número de ronda. */
-function sets(
-  prefix: string,
-  kind: MeasureKind,
-  values: number[],
-  options: { perSide?: boolean; percents?: number[] } = {},
-): PrescribedSet[] {
+function sets(prefix: string, kind: MeasureKind, values: number[], percents?: number[]): PrescribedSet[] {
   return values.map((value, i) => ({
     id: `${prefix}-${i + 1}`,
     measure: { kind, value },
-    perSide: options.perSide ?? false,
-    load: options.percents ? { kind: 'percent', percent: options.percents[i] } : FREE,
+    load: percents ? { kind: 'percent', percent: percents[i] } : FREE,
   }))
 }
 
@@ -67,12 +61,12 @@ export const coachDay1Week1: Day = {
         {
           id: 'fuerza-1-dominadas',
           exerciseId: 'dominadas',
-          sets: sets('dominadas', 'reps', [8, 8, 8, 8], { percents: [65, 65, 70, 70] }),
+          sets: sets('dominadas', 'reps', [8, 8, 8, 8], [65, 65, 70, 70]),
         },
         {
           id: 'fuerza-1-press-landmine',
           exerciseId: 'press-landmine',
-          sets: sets('press-landmine', 'reps', [6, 6, 6, 6], { perSide: true }),
+          sets: sets('press-landmine', 'reps', [6, 6, 6, 6]),
         },
         { id: 'fuerza-1-buda-cobra', exerciseId: 'buda-cobra', sets: sets('buda-cobra', 'reps', [3, 3, 3, 3]) },
       ],
@@ -86,7 +80,7 @@ export const coachDay1Week1: Day = {
         {
           id: 'fuerza-2-sentadilla',
           exerciseId: 'sentadilla',
-          sets: sets('sentadilla', 'reps', [8, 8, 8, 8], { percents: [65, 65, 70, 70] }),
+          sets: sets('sentadilla', 'reps', [8, 8, 8, 8], [65, 65, 70, 70]),
         },
         {
           id: 'fuerza-2-isquio-isometrico',
@@ -96,7 +90,7 @@ export const coachDay1Week1: Day = {
         {
           id: 'fuerza-2-psoas-estocada',
           exerciseId: 'psoas-estocada',
-          sets: sets('psoas-estocada', 'reps', [4, 4, 4, 4], { perSide: true }),
+          sets: sets('psoas-estocada', 'reps', [4, 4, 4, 4]),
         },
       ],
     },

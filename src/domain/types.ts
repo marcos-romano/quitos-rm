@@ -30,21 +30,22 @@ export type Load =
   | { kind: 'kg'; kg: number }
   | { kind: 'free' }
 
-/** Su posición en la lista de series equivale al número de ronda. */
+/**
+ * Su posición en la lista de series equivale al número de ronda. No lleva nota
+ * (es una sola por ejercicio) ni marca "por lado": el número cargado es el que vale.
+ */
 export interface PrescribedSet {
   id: Id
   measure: Measure
-  perSide: boolean
   load: Load
   /** Descanso propio en segundos; reemplaza al del bloque. */
   restSec?: number
-  note?: string
 }
 
 export interface BlockExercise {
   id: Id
   exerciseId: Id
-  /** Indicación del plan, de solo lectura durante la sesión. */
+  /** Nota opcional del plan, una sola por ejercicio; de solo lectura durante la sesión. */
   note?: string
   sets: PrescribedSet[]
 }
@@ -68,6 +69,7 @@ export interface Day {
 
 export interface Week {
   id: Id
+  /** Lo pone el usuario y la app nunca lo cambia sola: es independiente del orden. */
   number: number
   label?: string
   days: Day[]

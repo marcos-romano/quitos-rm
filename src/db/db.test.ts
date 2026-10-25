@@ -3,11 +3,11 @@ import 'fake-indexeddb/auto'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { coachDay1Week1 } from '../domain/coachDay1Week1.fixture.ts'
 import { prescribedLoad, resolveIncrement } from '../domain/load.ts'
-import type { Program } from '../domain/types.ts'
+import type { Program, Session } from '../domain/types.ts'
 import { createDatabase, type QuitosDb } from './db.ts'
 import { createExercise, findExerciseByName, listExercises } from './exercises.ts'
 import { addMax, getCurrentMax, getMaxHistory } from './maxes.ts'
-import { getProgram, listPrograms, saveProgram } from './programs.ts'
+import { deleteProgram, getProgram, listPrograms, saveProgram } from './programs.ts'
 import { getSettings, updateSettings } from './settings.ts'
 
 // Cada prueba usa una base nueva y la borra al terminar.
@@ -173,6 +173,42 @@ describe('programas', () => {
     const programs = await listPrograms(db)
     expect(programs).toHaveLength(1)
     expect(programs[0].name).toBe('Plan de fuerza (ajustado)')
+  })
+
+  test('eliminar un programa no toca sus sesiones y deja de estar activo', async () => {
+    const program = sampleProgram()
+    await saveProgram(db, program)
+    await updateSettings(db, { activeProgramId: program.id })
+    const session: Session = {
+      id: 'sesion-1',
+      programId: program.id,
+      weekId: 'w1',
+      dayId: coachDay1Week1.id,
+      status: 'completed',
+      date: '2026-10-24',
+      day: coachDay1Week1,
+      sets: {},
+      efforts: {},
+      startedAt: '2026-10-24T10:00:00.000Z',
+    }
+    await db.sessions.put(session)
+
+    await deleteProgram(db, program.id)
+
+    expect(await listPrograms(db)).toEqual([])
+    expect((await getSettings(db)).activeProgramId).toBeUndefined()
+    expect(await db.sessions.get('sesion-1')).toEqual(session)
+  })
+
+  test('eliminar otro programa deja el activo como estaba', async () => {
+    await saveProgram(db, sampleProgram())
+    await saveProgram(db, { ...sampleProgram(), id: 'otro' })
+    await updateSettings(db, { activeProgramId: 'programa-fuerza' })
+
+    await deleteProgram(db, 'otro')
+
+    expect((await getSettings(db)).activeProgramId).toBe('programa-fuerza')
+    expect((await listPrograms(db)).map((p) => p.id)).toEqual(['programa-fuerza'])
   })
 })
 
