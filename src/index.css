@@ -10,6 +10,9 @@
   --green: #089981;
   --red: #f23645;
 
+  /* Alto de la navegación inferior: 48 px más parte del área segura (DISENO.md §5). */
+  --nav-height: calc(48px + max(6px, env(safe-area-inset-bottom) - 14px));
+
   /* Resplandor neón de los colores de acento (DISENO.md §4). */
   --glow-blue: 0 0 14px color-mix(in srgb, var(--blue) 45%, transparent);
   --glow-green: 0 0 12px color-mix(in srgb, var(--green) 45%, transparent);

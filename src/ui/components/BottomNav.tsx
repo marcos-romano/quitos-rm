@@ -27,7 +27,7 @@ export function BottomNav({ active, onSelect }: { active: Tab; onSelect: (tab: T
           aria-current={active === id ? 'page' : undefined}
           onClick={() => onSelect(id)}
         >
-          <Icon size={24} strokeWidth={1.5} aria-hidden="true" />
+          <Icon size={22} strokeWidth={1.5} aria-hidden="true" />
           <span>{label}</span>
         </button>
       ))}

@@ -233,8 +233,9 @@
   z-index: 10;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  height: var(--nav-height);
   padding: 0 max(env(safe-area-inset-right), calc((100vw - 520px) / 2))
-    env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100vw - 520px) / 2));
+    max(6px, env(safe-area-inset-bottom) - 14px) max(env(safe-area-inset-left), calc((100vw - 520px) / 2));
   background-color: var(--surface);
   border-top: 1px solid var(--border);
 }
@@ -245,9 +246,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-height: 56px;
-  padding: 6px 0;
+  gap: 2px;
+  min-height: 48px;
+  padding: 0;
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -282,7 +283,7 @@
 .session-bar {
   position: fixed;
   right: max(calc(16px + env(safe-area-inset-right)), calc((100vw - 488px) / 2));
-  bottom: calc(56px + env(safe-area-inset-bottom) + 8px);
+  bottom: calc(var(--nav-height) + 8px);
   left: max(calc(16px + env(safe-area-inset-left)), calc((100vw - 488px) / 2));
   z-index: 10;
   display: flex;

@@ -1,6 +1,6 @@
 # quitos_RM: guía de diseño
 
-Versión 1.4. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
+Versión 1.5. Es la fuente de verdad del diseño visual de la app. El fondo, el texto, la tipografía y la elección de verde, rojo y azul vienen del usuario. Los valores derivados y las reglas de uso son propuestas, ajustables al verlas en pantallas reales.
 
 ## 1. Principios
 
@@ -111,7 +111,7 @@ Reglas que se desprenden:
 
 **Barra de sesión en curso.** Barra fija sobre la navegación inferior, con fondo `--surface-2`, borde azul y el texto "Sesión en curso: Semana 3 · Día 2" más un botón "Volver".
 
-**Navegación inferior.** Cinco ítems (Inicio, Programa, Máximos, Historial, Más) con ícono y etiqueta de 12 px. El ítem activo lleva el ícono en azul y la etiqueta en blanco nieve; los demás, en color secundario.
+**Navegación inferior.** Siempre visible. Cinco ítems (Inicio, Programa, Máximos, Historial, Más) con ícono de 22 px y etiqueta de 12 px. El ítem activo lleva el ícono en azul con resplandor, la etiqueta en blanco nieve y una línea azul de 2 px arriba, con resplandor (marca que no depende solo del color); los demás, en color secundario. Compacta, a pedido del usuario: 48 px de alto y pegada al borde inferior; usa parte del área segura de abajo del iPhone, sin invadir la franja del gesto de inicio.
 
 **Formularios.** Campos con fondo `--surface-2`, borde de 1 px, esquinas rectas, 48 px de alto y borde azul al enfocar. Etiqueta arriba, en mayúsculas de 12 px. Los campos de fecha nativos de iOS necesitan `appearance: none` para respetar el ancho y el alto. Las fechas que la app puede saber sola (el día en que se carga un máximo o se termina una sesión) se guardan automáticamente, sin pedir un campo.
 
@@ -119,7 +119,7 @@ Reglas que se desprenden:
 
 ## 6. Íconos y movimiento
 
-- Íconos de trazo de 1,5 a 2 px con esquinas redondeadas, de un único conjunto consistente (por ejemplo Lucide).
+- Íconos de Lucide (`lucide-react`), de trazo 1,5 px para acompañar la letra fina (2 px en la tilde).
 - Transiciones de 120 a 180 ms. Sin animaciones decorativas. Se respeta la preferencia del sistema de reducir el movimiento.
 
 ## 7. PWA e iPhone
