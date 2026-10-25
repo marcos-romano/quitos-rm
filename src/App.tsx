@@ -1,30 +1,52 @@
-import { useState } from 'react'
-import { ComponentCatalog } from './ui/ComponentCatalog.tsx'
-import { MaxesTestPanel } from './ui/MaxesTestPanel.tsx'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { BottomNav, type Tab } from './ui/components/BottomNav.tsx'
+import { HistoryScreen } from './ui/screens/HistoryScreen.tsx'
+import { HomeScreen } from './ui/screens/HomeScreen.tsx'
+import { MaxesScreen } from './ui/screens/MaxesScreen.tsx'
+import { MoreScreen } from './ui/screens/MoreScreen.tsx'
+import { ProgramScreen } from './ui/screens/ProgramScreen.tsx'
 import { UpdatePrompt } from './ui/UpdatePrompt.tsx'
-
-type View = 'panel' | 'catalog'
+import { usePwa } from './ui/usePwa.ts'
 
 function App() {
-  const [view, setView] = useState<View>('panel')
+  const [tab, setTab] = useState<Tab>('home')
+  const scrollByTab = useRef<Partial<Record<Tab, number>>>({})
+  const { worksOffline, needRefresh, update } = usePwa()
+
+  // Cambiar de pestaña no altera nada (CLAUDE.md §6.8): las cinco pantallas
+  // quedan armadas aunque no se vean, y cada una recuerda hasta dónde se bajó.
+  function selectTab(next: Tab) {
+    if (next === tab) return
+    scrollByTab.current[tab] = window.scrollY
+    setTab(next)
+  }
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, scrollByTab.current[tab] ?? 0)
+  }, [tab])
 
   return (
-    <main className="app">
-      <header className="app-header">
-        <h1 className="app-title">quitos_RM</h1>
-        <p className="app-version">Versión {__APP_VERSION__}</p>
-      </header>
-      <div className="view-switch" role="group" aria-label="Pantalla">
-        <button type="button" aria-pressed={view === 'panel'} onClick={() => setView('panel')}>
-          Panel de prueba
-        </button>
-        <button type="button" aria-pressed={view === 'catalog'} onClick={() => setView('catalog')}>
-          Componentes
-        </button>
-      </div>
-      {view === 'panel' ? <MaxesTestPanel /> : <ComponentCatalog />}
-      <UpdatePrompt />
-    </main>
+    <>
+      <main className={needRefresh ? 'app app-with-prompt' : 'app'}>
+        <div hidden={tab !== 'home'}>
+          <HomeScreen />
+        </div>
+        <div hidden={tab !== 'program'}>
+          <ProgramScreen />
+        </div>
+        <div hidden={tab !== 'maxes'}>
+          <MaxesScreen />
+        </div>
+        <div hidden={tab !== 'history'}>
+          <HistoryScreen />
+        </div>
+        <div hidden={tab !== 'more'}>
+          <MoreScreen worksOffline={worksOffline} />
+        </div>
+      </main>
+      {needRefresh && <UpdatePrompt onUpdate={update} />}
+      <BottomNav active={tab} onSelect={selectTab} />
+    </>
   )
 }
 

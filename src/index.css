@@ -50,43 +50,25 @@ body {
 }
 
 /* Margen lateral de 16 px más las áreas seguras del iPhone (DISENO.md §4 y §7).
-   Abajo queda lugar para el aviso de versión nueva. */
+   Abajo queda lugar para la navegación fija y, si aparece, el aviso de versión nueva. */
 .app {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
   max-width: 520px;
   margin: 0 auto;
   padding: calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
-    calc(96px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+    calc(var(--nav-height) + 24px) calc(16px + env(safe-area-inset-left));
 }
 
-.app-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+.app-with-prompt {
+  padding-bottom: calc(var(--nav-height) + 96px);
 }
 
-.app-title {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 300;
-}
-
-.app-version,
-.offline-status {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-/* Aviso de versión nueva, fijo abajo (DISENO.md §5: diálogos y botón principal). */
+/* Aviso de versión nueva, fijo sobre la navegación (DISENO.md §5: diálogos y botón principal). */
 .update-prompt {
   position: fixed;
-  left: calc(16px + env(safe-area-inset-left));
-  right: calc(16px + env(safe-area-inset-right));
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  right: max(calc(16px + env(safe-area-inset-right)), calc((100vw - 488px) / 2));
+  bottom: calc(var(--nav-height) + 8px);
+  left: max(calc(16px + env(safe-area-inset-left)), calc((100vw - 488px) / 2));
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -107,35 +89,6 @@ body {
   cursor: pointer;
 }
 
-/* Selector temporal entre el panel de prueba y la muestra de diseño (paso 3). */
-.view-switch {
-  display: flex;
-}
-
-.view-switch button {
-  flex: 1;
-  min-height: 44px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font: inherit;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.view-switch button + button {
-  border-left: none;
-}
-
-/* Línea azul con resplandor neón (DISENO.md §4). */
-.view-switch button[aria-pressed='true'] {
-  border-color: var(--blue);
-  color: var(--text);
-  box-shadow:
-    inset 0 0 0 1px var(--blue),
-    0 0 12px color-mix(in srgb, var(--blue) 45%, transparent);
-}
-
 /* Catálogo temporal de componentes (paso 3). */
 .catalog-row {
   display: flex;
@@ -150,6 +103,7 @@ body {
   gap: 12px;
 }
 
+/* Lugar para que la barra de sesión no tape el final del catálogo. */
 .catalog-bars-space {
-  height: calc(140px + env(safe-area-inset-bottom));
+  height: 80px;
 }

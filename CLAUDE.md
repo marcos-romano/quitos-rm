@@ -1,6 +1,6 @@
 # quitos_RM: especificación de la aplicación
 
-Versión 1.1. Se sigue ajustando a medida que se toman decisiones nuevas.
+Versión 1.2. Se sigue ajustando a medida que se toman decisiones nuevas.
 
 **Estado actual y cómo retomar:** cada conversación nueva arranca con el parte de situación de `CONTEXTO.md` (dónde quedó el proyecto, qué sigue y cómo trabajar con el usuario), que se importa acá:
 
@@ -22,7 +22,7 @@ Aplicación personal para planificar y registrar rutinas de gimnasio. La usa una
 - PWA de un solo usuario, datos locales, sin login.
 - Cada bloque de entrenamiento funciona como una superserie: los ejercicios del bloque se trabajan en rondas (una serie de cada ejercicio por ronda) y el descanso se aplica al terminar la ronda. Esto vale para todos los bloques (potencia, fuerza, estructura, extras).
 - No hay temporizador ni cronómetro. El descanso se muestra únicamente como dato.
-- La percepción del esfuerzo usa la escala RPE de 1 a 10, con una nota opcional. Es solo ilustrativa: no entra en ningún cálculo.
+- La percepción del esfuerzo usa la escala RPE de 1 a 10, con una nota opcional. Es solo ilustrativa: no entra en ningún cálculo. La marca el usuario al terminar cada ejercicio; el plan no indica un RPE objetivo.
 - Las series son individuales: cada una tiene sus propias repeticiones, carga y descanso, y se carga y se muestra siempre por separado. No hay atajos ni resúmenes del tipo "4 x 12". Al agregar una serie, arranca como copia de la anterior y se edita.
 - La carga de una serie puede ser un porcentaje del máximo del ejercicio, un peso fijo en kg o libre (sin carga prescripta).
 - En dominadas el 100% es una carga agregada, como en cualquier ejercicio de musculación. El peso corporal no interviene en ningún cálculo.
@@ -58,7 +58,7 @@ Se separa lo prescripto (el plan) de lo realizado (el registro).
 - **Bloque**: nombre, tipo (potencia, fuerza, hipertrofia, estructura, extra u otro), orden y descanso por defecto en segundos, que se aplica al cerrar cada ronda.
 - **Ejercicio del bloque**: referencia al catálogo, orden y nota opcional del plan (por ejemplo una indicación técnica del entrenador), que se muestra como texto de solo lectura durante la sesión.
 - **Catálogo de ejercicios**: nombre y tipo de medida (repeticiones, tiempo o distancia). Un ejercicio puede tener un máximo asociado y, opcionalmente, un incremento de redondeo propio (sección 5).
-- **Serie prescripta**: posición (equivale al número de ronda) y una medida: repeticiones, segundos o metros. Incluye indicador "por lado", carga (porcentaje, kg fijo o libre), descanso propio opcional (reemplaza al del bloque) y nota opcional.
+- **Serie prescripta**: posición (equivale al número de ronda) y una medida: repeticiones, segundos o metros. Incluye carga (porcentaje, kg fijo o libre) y descanso propio opcional (reemplaza al del bloque). No lleva nota: la nota es una sola por ejercicio. Tampoco hay marca "por lado": el número cargado es el que vale y el usuario sabe si es por lado o en total.
 - **Máximo**: ejercicio, valor en kg y fecha. Se conserva el historial de máximos anteriores.
 
 ### 4.2 Registro
@@ -121,7 +121,8 @@ Navegación principal con una barra inferior: Inicio, Programa, Máximos, Histor
 - Crear, editar, duplicar, reordenar y eliminar en cada nivel. Eliminar pide confirmación.
 - Duplicar semana completa, para armar variaciones a partir de una existente.
 - Las series se agregan de a una: cada serie nueva arranca como copia de la anterior y se edita. No hay atajo "N x M".
-- Edición de cada serie por separado: medida, carga (porcentaje, kg o libre), descanso y nota.
+- Edición de cada serie por separado: medida, carga (porcentaje, kg o libre) y descanso.
+- Cada ejercicio tiene una sola nota, opcional. El plan no lleva RPE: el RPE se marca al terminar cada ejercicio durante la sesión (sección 6.3).
 
 ### 6.3 Entrenamiento (sesión)
 
@@ -178,11 +179,10 @@ Formato de una fila por serie, en la hoja "Programa":
 | Repeticiones | Número, o vacío |
 | Tiempo (s) | Número, o vacío |
 | Distancia (m) | Número, o vacío |
-| Por lado | sí o no |
 | Tipo de carga | porcentaje, kg o libre |
 | Carga | Valor, o vacío si es libre |
 | Descanso de la serie (s) | Opcional, reemplaza al del bloque |
-| Nota | Texto opcional |
+| Nota del ejercicio | Texto opcional. Una sola por ejercicio: va en la fila de su primera serie |
 
 Reglas de importación:
 - Siempre hay pantalla de revisión antes de guardar, con los errores señalados por fila.

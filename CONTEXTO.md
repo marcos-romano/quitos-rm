@@ -5,14 +5,16 @@ Parte de situación para que una conversación nueva de Claude Code siga el trab
 - `CLAUDE.md`: qué es la app (especificación). `DISENO.md`: cómo se ve (fuente de verdad del diseño). Este archivo: dónde estamos, cómo se trabaja y qué sigue. No repite lo que ya dicen esos dos.
 - Se actualiza al cerrar cada tanda de trabajo y antes de terminar una conversación: secciones 1, 6 y 7, más lo que haya cambiado.
 
-**Última actualización:** 25/10/2026, al cerrar la primera conversación. Versión publicada: 0.7.1.
+**Última actualización:** 25/10/2026, al cerrar la tanda 4.1. Versión publicada: 0.8.0.
 
 ## 1. Dónde estamos
 
-- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.7.1. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
+- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.8.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
 - **Versión 1, pasos 1, 2 y 3:** terminados y probados en el iPhone (fundación, modelo de datos con cálculo y base local, diseño y componentes base).
-- **Paso 4 (editor del plan):** el plan está aprobado con cambios (sección 6), pero **todavía no se empezó**.
-- **Lo primero en la conversación nueva:** el usuario dijo que tiene **más cambios al plan del paso 4** y todavía no los contó. Hay que pedírselos antes de escribir código.
+- **Paso 4 (editor del plan):** en curso. La tanda 4.1 (navegación con las cinco pestañas) está terminada y publicada. Sigue la 4.2.
+- **Preguntas abiertas al usuario** (hacerlas antes de la tanda 4.2):
+  - **Orden de las tandas:** ¿se carga el programa del entrenador antes que las pantallas del editor (opción A, recomendada) o después? No la contestó.
+  - **Medida:** ¿el programa tiene ejercicios por tiempo o por distancia, o todo va en repeticiones? Preguntó qué era "medida" y no contestó. Se ofreció revisar el PDF del entrenador.
 
 ## 2. Cómo trabajar con el usuario
 
@@ -61,7 +63,7 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 ## 4. Mapa del código
 
 - `src/domain/`: lógica pura, sin pantallas ni base de datos. Cada archivo tiene su `*.test.ts` al lado.
-  - `types.ts`: modelo completo. Los tipos del registro (`Session`, `PerformedSet`, `ExerciseEffort`) son provisorios hasta el paso 5.
+  - `types.ts`: modelo completo. Los tipos del registro (`Session`, `PerformedSet`, `ExerciseEffort`) son provisorios hasta el paso 5. `PrescribedSet` todavía tiene `perSide` y `note`, que se sacan en la tanda 4.2 (sección 6).
   - `load.ts`: cálculo de carga en enteros (centésimas de kg y décimas de porcentaje), con empates hacia arriba. También `resolveIncrement` y las constantes de redondeo.
   - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza "1O"), `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
   - `names.ts`: limpia y normaliza nombres, sin tildes ni mayúsculas.
@@ -74,15 +76,21 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts`, `settings.ts` y `persist.ts` (pide almacenamiento persistente).
   - `db.test.ts`: usa `fake-indexeddb`, que se importa primero, y una base nueva por test. Incluye "cerrar y reabrir la app".
 - `src/ui/`: pantallas.
-  - `App.tsx`: por ahora tiene un selector **temporal** "Panel de prueba / Componentes". Se reemplaza en la tanda 4.1.
+  - `App.tsx` (está en `src/`, no en `src/ui/`): la pestaña activa y la `BottomNav`. Las cinco pantallas quedan armadas aunque no se vean (atributo `hidden`), así cambiar de pestaña no pierde nada, y cada pestaña recuerda hasta dónde se bajó.
+  - `screens/`: una pantalla por pestaña.
+    - `HomeScreen` (título "quitos_RM"), `ProgramScreen` e `HistoryScreen`: textos provisorios ("Llega en el paso 6", "en las próximas tandas del paso 4", "en el paso 7").
+    - `MaxesScreen`: envuelve el panel de prueba.
+    - `MoreScreen`: versión, "Lista para usar sin conexión" y el botón "Ver componentes", que abre el catálogo como pantalla interna con "←".
+  - `usePwa.ts`: registra el service worker, dice si la app funciona sin conexión y si hay versión nueva (modo `prompt`, sin recargas solas), y busca versión nueva al volver a primer plano.
+  - `UpdatePrompt.tsx`: aviso "Nueva versión · Actualizar", fijo sobre la navegación.
   - `MaxesTestPanel.tsx`: **temporal** hasta el paso 7. Sirve para cargar máximos y probar el cálculo.
   - `ComponentCatalog.tsx`: **temporal**. Muestra cada componente con sus estados.
-  - `UpdatePrompt.tsx`: aviso "Nueva versión · Actualizar" (modo `prompt`, sin recargas solas) y búsqueda de versión nueva al volver a primer plano.
   - `components/`: piezas base, con estilos en `components.css`.
     - `Button` (variantes `primary`, `secondary` y `destructive`; acepta `ref`) y `TextField` (con `error`).
     - `Section` (separador sin tarjeta) y `LoadValue`.
     - `Tick` (44 × 44) y `RpeSelector` (dos filas de cinco; tocar el elegido lo borra).
     - `BottomNav` (cinco pestañas con su tipo `Tab`), `SessionBar` y `ConfirmDialog` (arranca con "Cancelar" seleccionado).
+    - `Screen`: título de 28 px y, si recibe `onBack`, el botón "←" de 48 × 48. Toda pantalla nueva la usa.
 - `src/index.css`: tokens de `DISENO.md` en `:root` (colores, resplandores `--glow-*` y `--nav-height`), letra 300 con cifras tabulares en todo y esquinas rectas globales.
 - **Raíz:**
   - `vite.config.ts`: subruta `/quitos-rm/`, manifiesto PWA y `__APP_VERSION__` tomado de `package.json`.
@@ -109,6 +117,11 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 - **Volver atrás:** con un botón "←" arriba de cada pantalla. No se usa ninguna librería de rutas.
 - **Series:** **nunca** "N x M". Cada serie se carga y se muestra por separado. "Agregar serie" crea una copia de la anterior, que después se edita. Tampoco hay notación compacta en Excel.
 - **Carga calculada:** si la carga es un porcentaje y el ejercicio tiene máximo, al lado se muestran los kg calculados (`LoadValue`).
+- **Qué se carga en cada serie** (decidido en la segunda conversación, ya escrito en `CLAUDE.md` 1.2):
+  - Medida (repeticiones), carga y descanso.
+  - **Sin nota por serie:** una sola nota por ejercicio, opcional.
+  - **Sin marca "por lado":** el número cargado es el que vale. El usuario sabe si es por lado o en total.
+  - **Sin RPE en el plan:** el RPE es solo el que el usuario marca al terminar cada ejercicio (paso 5).
 - **Programa del entrenador:** se carga como **ejemplo** para avanzar; el Excel sigue en la Versión 2.
   - Claude lo transcribe desde el PDF de `referencias/` a `referencias/programa-entrenador.json`, que nunca se publica y no lleva nombres de personas.
   - Se agrega un botón **"Importar programa"** en la pestaña Más. El usuario pasa el archivo al iPhone por AirDrop o Archivos.
@@ -120,14 +133,11 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
     - En el Día 4, un ejercicio llamado "QUE ME IMPORTA", que parece un comodín.
     - "HIP TRHUST" mal escrito.
 
-**Tandas propuestas.** El orden con la importación como 4.3 es una propuesta: confirmarlo junto con los cambios pendientes.
+**Tandas.** El orden con la importación como 4.3 sigue sin confirmar (sección 1).
 
-1. **4.1, estructura real:**
-   - `BottomNav` con las cinco pestañas reemplaza el selector temporal.
-   - Inicio e Historial muestran "Llega en el paso 6" o "en el paso 7".
-   - Programa queda para el editor y Máximos usa el panel de prueba hasta el paso 7.
-   - Más tiene el catálogo y la versión (y luego "Importar programa").
+1. **4.1, estructura real: terminada** (versión 0.8.0). Ver el mapa del código.
 2. **4.2, lógica del plan con tests** (`src/domain/plan.ts`):
+   - Primero, sacar `perSide` y la `note` de `PrescribedSet` (y del fixture del entrenador y sus tests). La nota del ejercicio (`note` de `BlockExercise`) queda.
    - Crear, editar, duplicar, reordenar y eliminar en cada nivel.
    - Duplicar semana completa, con ids nuevos en toda la copia.
    - Agregar serie como copia de la anterior.
@@ -150,7 +160,6 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - El contenido de las celdas del resumen de RPE.
 - **De `DISENO.md` §9:** mostrar las fechas como dd/mm/aaaa aunque el iPhone esté en otro idioma, y el ícono definitivo.
 - **Temporales para retirar:**
-  - el selector de `App.tsx` (tanda 4.1);
   - `MaxesTestPanel` (paso 7);
   - `ComponentCatalog`, cuando ya no haga falta.
 - **Paso 5:** ajustar los tipos del registro y definir con el usuario la pantalla de sesión. Conviene hacerlo después de recibir sus archivos de referencia.
@@ -159,6 +168,6 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 
 1. Leer `CLAUDE.md`, `DISENO.md` y este archivo (los dos primeros se cargan solos y este se importa desde `CLAUDE.md`).
 2. Confirmar el estado con `git log --oneline | head` y `npm test`. Tienen que pasar todos los tests.
-3. Resumirle al usuario en tres o cuatro líneas dónde estamos y **pedirle los cambios pendientes al plan del paso 4**.
-4. Con eso, proponer el arranque de la tanda 4.1 y esperar el "sí".
+3. Resumirle al usuario en tres o cuatro líneas dónde estamos y hacerle las **preguntas abiertas** de la sección 1.
+4. Con eso, proponer el arranque de la tanda 4.2 y esperar el "sí".
 5. Al cerrar cada tanda, actualizar este archivo y hacer commit.

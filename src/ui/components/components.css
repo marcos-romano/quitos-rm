@@ -29,6 +29,38 @@
   line-height: 1.1;
 }
 
+/* ── Pantalla: título y botón para volver ────────────────────────────────── */
+
+.screen-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+
+.screen-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 300;
+}
+
+/* 48 × 48 de objetivo táctil; el margen negativo alinea la flecha con el margen lateral. */
+.back-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-left: -13px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
 /* ── Sección sin tarjeta ─────────────────────────────────────────────────── */
 
 .section {
@@ -83,6 +115,7 @@
 }
 
 .button:focus-visible,
+.back-button:focus-visible,
 .tick:focus-visible,
 .rpe-chip:focus-visible {
   outline: 1px solid var(--text-muted);

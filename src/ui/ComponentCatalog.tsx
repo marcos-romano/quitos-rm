@@ -4,7 +4,6 @@
 import { useState } from 'react'
 import { formatDayLabel, parseDecimal } from '../domain/format.ts'
 import { prescribedLoad } from '../domain/load.ts'
-import { BottomNav, type Tab } from './components/BottomNav.tsx'
 import { Button } from './components/Button.tsx'
 import { ConfirmDialog } from './components/ConfirmDialog.tsx'
 import { LoadValue } from './components/LoadValue.tsx'
@@ -19,7 +18,6 @@ export function ComponentCatalog() {
   const [ticks, setTicks] = useState([true, false])
   const [rpe, setRpe] = useState<number | undefined>(8)
   const [showBars, setShowBars] = useState(false)
-  const [tab, setTab] = useState<Tab>('home')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [notice, setNotice] = useState<string>()
 
@@ -84,13 +82,13 @@ export function ComponentCatalog() {
         <RpeSelector value={rpe} onChange={setRpe} />
       </Section>
 
-      <Section title="Navegación y sesión en curso">
+      <Section title="Sesión en curso">
         <p className="text-secondary">
-          La barra de navegación y la de sesión en curso quedan fijas abajo, en todas las
-          pantallas. Tocá los ítems para ver cómo se marca el activo.
+          Mientras haya un entrenamiento abierto, esta barra queda fija sobre la navegación, en
+          todas las pantallas.
         </p>
         <Button fullWidth onClick={() => setShowBars(!showBars)}>
-          {showBars ? 'Ocultar barras' : 'Mostrar barras'}
+          {showBars ? 'Ocultar barra' : 'Mostrar barra'}
         </Button>
       </Section>
 
@@ -118,13 +116,12 @@ export function ComponentCatalog() {
 
       {showBars && (
         <>
-          {/* Espacio para que las barras fijas no tapen el final de la página. */}
+          {/* Espacio para que la barra fija no tape el final de la página. */}
           <div className="catalog-bars-space" />
           <SessionBar
             dayLabel={formatDayLabel(3, 'Día 2')}
             onReturn={() => setNotice('Acá volverías a la sesión en curso.')}
           />
-          <BottomNav active={tab} onSelect={setTab} />
         </>
       )}
     </div>
