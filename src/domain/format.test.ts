@@ -1,12 +1,15 @@
 import { describe, expect, test } from 'vitest'
 import {
+  formatCount,
   formatDate,
   formatDayLabel,
   formatIncrement,
   formatKg,
   formatLoad,
   formatNumber,
+  formatRest,
   parseDecimal,
+  parseWholeNumber,
   toLocalDate,
 } from './format.ts'
 
@@ -90,5 +93,32 @@ describe('fechas', () => {
 
   test('el primer minuto del día también es de ese día', () => {
     expect(toLocalDate(new Date(2026, 0, 5, 0, 0))).toBe('2026-01-05')
+  })
+})
+
+describe('números enteros escritos por el usuario', () => {
+  test('acepta enteros mayores que cero, con espacios alrededor', () => {
+    expect(parseWholeNumber('3')).toBe(3)
+    expect(parseWholeNumber(' 12 ')).toBe(12)
+  })
+
+  test('rechaza el cero, los decimales, los negativos y las letras', () => {
+    for (const text of ['0', '3,5', '3.5', '-2', 'tres', '1O', '']) {
+      expect(parseWholeNumber(text)).toBeUndefined()
+    }
+  })
+})
+
+describe('textos del plan', () => {
+  test('cantidades en singular o plural', () => {
+    expect(formatCount(1, 'semana', 'semanas')).toBe('1 semana')
+    expect(formatCount(4, 'semana', 'semanas')).toBe('4 semanas')
+    expect(formatCount(0, 'día', 'días')).toBe('0 días')
+    expect(formatCount(1200, 'serie', 'series')).toBe('1.200 series')
+  })
+
+  test('descanso en segundos', () => {
+    expect(formatRest(180)).toBe('180 s')
+    expect(formatRest(90)).toBe('90 s')
   })
 })

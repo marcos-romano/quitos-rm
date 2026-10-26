@@ -5,14 +5,14 @@ Parte de situación para que una conversación nueva de Claude Code siga el trab
 - `CLAUDE.md`: qué es la app (especificación). `DISENO.md`: cómo se ve (fuente de verdad del diseño). Este archivo: dónde estamos, cómo se trabaja y qué sigue. No repite lo que ya dicen esos dos.
 - Se actualiza al cerrar cada tanda de trabajo y antes de terminar una conversación: secciones 1, 6 y 7, más lo que haya cambiado.
 
-**Última actualización:** 25/10/2026, al cerrar la tanda 4.3. Versión publicada: 0.9.0.
+**Última actualización:** 26/10/2026, al cerrar la tanda 4.4. Versión publicada: 0.10.0.
 
 ## 1. Dónde estamos
 
-- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.9.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
+- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.10.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
 - **Versión 1, pasos 1, 2 y 3:** terminados y probados en el iPhone (fundación, modelo de datos con cálculo y base local, diseño y componentes base).
-- **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación con las cinco pestañas), la 4.2 (motor del plan con tests) y la 4.3 (importar el programa del entrenador). Sigue la 4.4: pantallas de programa, semana y día.
-- **A cargo del usuario:** pasar `referencias/programa-entrenador.json` al iPhone por AirDrop e importarlo desde Más. Preguntarle si lo hizo y si salió bien.
+- **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación), la 4.2 (motor del plan), la 4.3 (importar el programa del entrenador, ya importado en el iPhone) y la 4.4 (pantallas de programa, semana y día). Sigue la 4.5: bloque, ejercicio y serie.
+- **A revisar por el usuario en el iPhone:** cómo se ven las pantallas nuevas de la 4.4 (filas de la lista, controles del modo "Editar", botón "Editar"/"Listo"). Cuando las apruebe, sumarlas a `DISENO.md` §5.
 
 ## 2. Cómo trabajar con el usuario
 
@@ -70,7 +70,7 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
     - En cualquier nivel, según la ruta: `moveItem` (-1 o +1; en los extremos no hace nada), `removeItem` y `duplicateItem`. La copia de una semana va al final con el número siguiente; la de día y bloque, justo después y con "(copia)"; la de ejercicio y serie, justo después.
     - Una ruta que no existe da error.
   - `load.ts`: cálculo de carga en enteros (centésimas de kg y décimas de porcentaje), con empates hacia arriba. También `resolveIncrement` y las constantes de redondeo.
-  - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza "1O"), `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
+  - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza letras), `parseWholeNumber` (enteros mayores que cero), `formatCount` ("1 semana", "4 semanas"), `formatRest` ("180 s"), `BLOCK_TYPE_LABELS`, `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
   - `names.ts`: limpia y normaliza nombres, sin tildes ni mayúsculas.
   - `settings.ts`: ajustes por defecto (redondeo de 2,5 kg y recordatorio a los 14 días).
   - `programFile.ts`: el archivo de programa en JSON (`format: "quitos-rm-program"`, `version: 1`), con los ejercicios por nombre y cada serie como `{ "reps" | "seconds" | "meters", "percent" | "kg", "restSec" }`.
@@ -81,12 +81,15 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 - `src/db/`: base local IndexedDB con Dexie. Las funciones reciben `db` como parámetro, para poder probarlas.
   - `db.ts`: esquema versión 1 (programs, exercises con `&nameKey` único, maxes, sessions y settings). Al crearse la base carga "Dominadas" con incremento de 1,25 kg.
   - `appDb.ts`: la base única que usa la app.
-  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts` (`deleteProgram` no toca las sesiones y saca el programa activo si era ese; `importProgram` guarda siempre un programa nuevo, en una sola transacción, y lo deja activo si no había otro), `settings.ts` y `persist.ts` (pide almacenamiento persistente).
+  - `exercises.ts`, `maxes.ts` (historial; el vigente es el de fecha más reciente), `programs.ts` (`deleteProgram` no toca las sesiones y saca el programa activo si era ese; `importProgram` guarda siempre un programa nuevo, en una sola transacción; `addProgram` deja activo el programa nuevo si no había otro; `changeProgram` aplica cada cambio del editor sobre la última versión guardada; `setActiveProgram`), `settings.ts` y `persist.ts` (pide almacenamiento persistente).
   - `db.test.ts`: usa `fake-indexeddb`, que se importa primero, y una base nueva por test. Incluye "cerrar y reabrir la app".
 - `src/ui/`: pantallas.
   - `App.tsx` (está en `src/`, no en `src/ui/`): la pestaña activa y la `BottomNav`. Las cinco pantallas quedan armadas aunque no se vean (atributo `hidden`), así cambiar de pestaña no pierde nada, y cada pestaña recuerda hasta dónde se bajó.
+  - `useLiveQuery.ts`: lee de la base con `liveQuery` de Dexie y se actualiza sola cuando esos datos cambian. La consulta se arma una sola vez.
   - `screens/`: una pantalla por pestaña.
-    - `HomeScreen` (título "quitos_RM"), `ProgramScreen` e `HistoryScreen`: textos provisorios ("Llega en el paso 6", "en las próximas tandas del paso 4", "en el paso 7").
+    - `HomeScreen` (título "quitos_RM") e `HistoryScreen`: textos provisorios ("Llega en el paso 6", "en el paso 7").
+    - `ProgramScreen`: la pestaña Programa. Guarda dónde está el usuario (`programId`, `weekId`, `dayId`) y si está en modo "Editar". Abre cada nivel arriba de todo y, al volver, recupera la posición del nivel anterior. Si lo que se miraba deja de existir, muestra el nivel de arriba. Cada cambio pasa por `changeProgram`.
+    - `program/`: `ProgramListView` (programas, con el activo marcado con ícono y texto; "Nuevo programa" abre el programa nuevo en modo "Editar"), `ProgramView` (datos, "Usar como programa activo" y semanas), `WeekView` (número, etiqueta y días), `DayView` (nombre, preparación y bloques con sus ejercicios; los bloques todavía no se abren ni se agregan), `shared.tsx` (`EditToggle` y el tipo `ChangeProgram`) y `fields.ts` (`requireName`, `optional`).
     - `MaxesScreen`: envuelve el panel de prueba.
     - `MoreScreen`: "Importar programa" (elige un `.json` y abre la revisión), versión, "Lista para usar sin conexión" y "Ver componentes", que abre el catálogo como pantalla interna con "←".
     - `ImportProgramScreen`: revisión antes de guardar (programa, resumen, ejercicios nuevos y existentes) o la lista de errores. Mirar no guarda nada.
@@ -99,7 +102,10 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
     - `Section` (separador sin tarjeta) y `LoadValue`.
     - `Tick` (44 × 44) y `RpeSelector` (dos filas de cinco; tocar el elegido lo borra).
     - `BottomNav` (cinco pestañas con su tipo `Tab`), `SessionBar` y `ConfirmDialog` (arranca con "Cancelar" seleccionado).
-    - `Screen`: título de 28 px y, si recibe `onBack`, el botón "←" de 48 × 48. Toda pantalla nueva la usa.
+    - `Screen`: título de 28 px, `subtitle` opcional debajo, `action` arriba a la derecha (por ejemplo "Editar") y, si recibe `onBack`, el botón "←" de 48 × 48. Toda pantalla nueva la usa.
+    - `PlanList`: filas del plan con título de 20 px, subtítulo y detalle. En modo "Editar" muestra ↑ ↓ (opcionales), duplicar y eliminar (rojo, con `ConfirmDialog`), con botones de 44 × 44.
+    - `AutoSaveField`: campo que guarda mientras se escribe. Mientras tiene el foco muestra lo escrito; si `validate` da error, no guarda y lo muestra.
+    - `TextField` acepta `onFocus` y `onBlur`.
 - `src/index.css`: tokens de `DISENO.md` en `:root` (colores, resplandores `--glow-*` y `--nav-height`), letra 300 con cifras tabulares en todo y esquinas rectas globales.
 - **Raíz:**
   - `vite.config.ts`: subruta `/quitos-rm/`, manifiesto PWA y `__APP_VERSION__` tomado de `package.json`.
@@ -124,6 +130,10 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 - **Guardado automático:** no hay botón "Guardar".
 - **Modo "Editar":** en cada pantalla, un botón "Editar" muestra los controles para reordenar (flechas ↑ ↓), duplicar y eliminar. Así, mirar el plan nunca lo modifica. Eliminar siempre pasa por `ConfirmDialog`.
 - **Volver atrás:** con un botón "←" arriba de cada pantalla. No se usa ninguna librería de rutas.
+- **Decidido con criterio en la 4.4** (el usuario lo ve en el iPhone y puede pedir cambios):
+  - Todo lo que modifica (agregar, renombrar, mover, duplicar y eliminar) aparece solo en modo "Editar". Fuera de ese modo, el único botón que cambia algo es "Usar como programa activo". Si no hay programas, "Nuevo programa" se ve igual.
+  - Al entrar a otro nivel o volver, el modo "Editar" se apaga.
+  - Eliminar el programa activo deja la app sin programa activo: no se elige otro solo.
 - **Números de semana:** cada semana conserva el número que le pone el usuario. La app nunca renumera sola al mover, borrar o duplicar: el usuario prefiere ese margen. El orden de la lista es independiente del número.
 - **Orden de las tandas:** el usuario lo dejó a criterio de Claude. Se carga el programa del entrenador (4.3) antes de las pantallas del editor (4.4 y 4.5).
 - **Series:** **nunca** "N x M". Cada serie se carga y se muestra por separado. "Agregar serie" crea una copia de la anterior, que después se edita. Tampoco hay notación compacta en Excel.
@@ -146,11 +156,9 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 1. **4.1, estructura real: terminada** (versión 0.8.0). Ver el mapa del código.
 2. **4.2, lógica del plan con tests: terminada.** Ver `plan.ts` en el mapa del código. No cambia nada visible, así que se subió sin cambiar la versión.
 3. **4.3, importar el programa de ejemplo: terminada** (versión 0.9.0).
-4. **4.4, pantallas de programa, semana y día:**
-   - Lista de programas con el activo marcado. Al crear el primero, queda activo (`activeProgramId` en ajustes).
-   - Semanas, con agregar y duplicar.
-   - Días, con nombre y texto de preparación.
+4. **4.4, pantallas de programa, semana y día: terminada** (versión 0.10.0). Ver el mapa del código.
 5. **4.5, pantallas de bloque, ejercicio y serie:**
+   - En `DayView`: abrir un bloque y "Agregar bloque" (nombre, tipo y descanso).
    - Bloque: nombre, tipo, descanso y sus ejercicios. Cada ejercicio se elige del catálogo con búsqueda o se crea en el momento.
    - Ejercicio: su nota (una sola, opcional) y sus series.
    - Serie: medida, carga y descanso propio.
@@ -172,5 +180,5 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
 1. Leer `CLAUDE.md`, `DISENO.md` y este archivo (los dos primeros se cargan solos y este se importa desde `CLAUDE.md`).
 2. Confirmar el estado con `git log --oneline | head` y `npm test`. Tienen que pasar todos los tests.
 3. Resumirle al usuario en tres o cuatro líneas dónde estamos.
-4. Preguntar si importó el programa en el iPhone. Con eso, proponer el arranque de la tanda 4.4 y esperar el "sí".
+4. Preguntar qué le parecieron las pantallas de la 4.4 en el iPhone. Con eso, proponer el arranque de la tanda 4.5 y esperar el "sí".
 5. Al cerrar cada tanda, actualizar este archivo y hacer commit.

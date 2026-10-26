@@ -1,7 +1,7 @@
 // Formatos de la interfaz en español rioplatense (es-AR): coma decimal y fechas dd/mm/aaaa.
 
 import type { LoadResult } from './load.ts'
-import type { LocalDate, RoundingIncrement } from './types.ts'
+import type { BlockType, LocalDate, RoundingIncrement } from './types.ts'
 
 const numberFormat = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })
 
@@ -18,6 +18,36 @@ export function parseDecimal(text: string): number | undefined {
   const trimmed = text.trim()
   if (!/^\d+([.,]\d+)?$/.test(trimmed)) return undefined
   return Number(trimmed.replace(',', '.'))
+}
+
+/**
+ * Número entero mayor que cero escrito por el usuario, por ejemplo el de una semana:
+ * "3" → 3. "3,5", "0" o "tres" dan `undefined`.
+ */
+export function parseWholeNumber(text: string): number | undefined {
+  const trimmed = text.trim()
+  if (!/^\d+$/.test(trimmed)) return undefined
+  const value = Number(trimmed)
+  return value > 0 ? value : undefined
+}
+
+/** Cantidad con su palabra en singular o plural: "1 semana", "4 semanas". */
+export function formatCount(count: number, singular: string, plural: string): string {
+  return `${formatNumber(count)} ${count === 1 ? singular : plural}`
+}
+
+/** Descanso en segundos, como se muestra en el plan y en la sesión: "180 s". */
+export function formatRest(seconds: number): string {
+  return `${formatNumber(seconds)} s`
+}
+
+export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
+  power: 'Potencia',
+  strength: 'Fuerza',
+  hypertrophy: 'Hipertrofia',
+  structure: 'Estructura',
+  extra: 'Extra',
+  other: 'Otro',
 }
 
 /** Texto del botón del día (DISENO.md §5): "Semana 3 · Día 2". */

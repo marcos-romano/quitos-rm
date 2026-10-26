@@ -3,12 +3,22 @@ import 'fake-indexeddb/auto'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { coachDay1Week1 } from '../domain/coachDay1Week1.fixture.ts'
 import { prescribedLoad, resolveIncrement } from '../domain/load.ts'
+import { addWeek, createProgram, updateProgram } from '../domain/plan.ts'
 import type { FileProgram } from '../domain/programFile.ts'
 import type { Program, Session } from '../domain/types.ts'
 import { createDatabase, type QuitosDb } from './db.ts'
 import { createExercise, findExerciseByName, listExercises } from './exercises.ts'
 import { addMax, getCurrentMax, getMaxHistory } from './maxes.ts'
-import { deleteProgram, getProgram, importProgram, listPrograms, saveProgram } from './programs.ts'
+import {
+  addProgram,
+  changeProgram,
+  deleteProgram,
+  getProgram,
+  importProgram,
+  listPrograms,
+  saveProgram,
+  setActiveProgram,
+} from './programs.ts'
 import { getSettings, updateSettings } from './settings.ts'
 
 // Cada prueba usa una base nueva y la borra al terminar.
@@ -199,6 +209,36 @@ describe('programas', () => {
     expect(await listPrograms(db)).toEqual([])
     expect((await getSettings(db)).activeProgramId).toBeUndefined()
     expect(await db.sessions.get('sesion-1')).toEqual(session)
+  })
+
+  test('el primer programa creado queda activo; los siguientes, no', async () => {
+    const first = createProgram('Octubre')
+    const second = createProgram('Noviembre')
+    await addProgram(db, first)
+    await addProgram(db, second)
+
+    expect((await getSettings(db)).activeProgramId).toBe(first.id)
+    await setActiveProgram(db, second.id)
+    expect((await getSettings(db)).activeProgramId).toBe(second.id)
+  })
+
+  test('cada cambio se aplica sobre la última versión guardada', async () => {
+    const program = createProgram('Octubre')
+    await addProgram(db, program)
+
+    // Dos cambios lanzados a la vez, como dos toques seguidos en la pantalla.
+    await Promise.all([
+      changeProgram(db, program.id, (p) => updateProgram(p, { description: '4 semanas' })),
+      changeProgram(db, program.id, (p) => addWeek(p)),
+    ])
+
+    const saved = await getProgram(db, program.id)
+    expect(saved?.description).toBe('4 semanas')
+    expect(saved?.weeks).toHaveLength(1)
+  })
+
+  test('cambiar un programa que ya no existe da error', async () => {
+    await expect(changeProgram(db, 'no-existe', (p) => p)).rejects.toThrow('El programa ya no existe.')
   })
 
   test('eliminar otro programa deja el activo como estaba', async () => {

@@ -33,10 +33,20 @@
 
 .screen-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   min-height: 48px;
   margin-bottom: 16px;
+}
+
+.screen-heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-top: 4px;
+  overflow-wrap: anywhere;
 }
 
 .screen-title {
@@ -59,6 +69,108 @@
   border: none;
   color: var(--text);
   cursor: pointer;
+}
+
+/* ── Lista del plan: filas separadas por líneas finas, sin tarjetas ──────── */
+
+.plan-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-row-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  min-height: 64px;
+  justify-content: center;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+button.plan-row-main {
+  cursor: pointer;
+}
+
+.plan-row-title {
+  font-size: 20px;
+}
+
+.plan-row-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.plan-row-actions {
+  display: flex;
+  flex-shrink: 0;
+}
+
+/* Objetivo táctil de 44 × 44 (DISENO.md §8). */
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.icon-button-destructive {
+  color: var(--red);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--red) 55%, transparent));
+}
+
+/* Marca dentro de un texto secundario, por ejemplo "✓ Activo · 4 semanas". */
+.status-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-inline svg {
+  color: var(--green);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--green) 55%, transparent));
+}
+
+/* Una línea de estado con ícono, por ejemplo "Programa activo". */
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+}
+
+.status-line svg {
+  flex-shrink: 0;
+  color: var(--green);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--green) 55%, transparent));
 }
 
 /* ── Sección sin tarjeta ─────────────────────────────────────────────────── */
@@ -116,6 +228,8 @@
 
 .button:focus-visible,
 .back-button:focus-visible,
+.icon-button:focus-visible,
+.plan-row-main:focus-visible,
 .tick:focus-visible,
 .rpe-chip:focus-visible {
   outline: 1px solid var(--text-muted);

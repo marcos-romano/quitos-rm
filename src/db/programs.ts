@@ -12,6 +12,38 @@ export async function saveProgram(db: QuitosDb, program: Program, now: Date = ne
   return saved
 }
 
+/**
+ * Aplica un cambio del editor (ver plan.ts) al programa guardado, siempre sobre su
+ * última versión: dos cambios seguidos nunca se pisan entre sí.
+ */
+export async function changeProgram(
+  db: QuitosDb,
+  id: Id,
+  change: (program: Program) => Program,
+  now: Date = new Date(),
+): Promise<Program> {
+  return db.transaction('rw', db.programs, async () => {
+    const program = await db.programs.get(id)
+    if (!program) throw new Error('El programa ya no existe.')
+    return saveProgram(db, change(program), now)
+  })
+}
+
+/** Guarda un programa nuevo. Si no había programa activo, este pasa a serlo. */
+export async function addProgram(db: QuitosDb, program: Program): Promise<void> {
+  await db.transaction('rw', db.programs, db.settings, async () => {
+    await db.programs.add(program)
+    if ((await getSettings(db)).activeProgramId === undefined) {
+      await updateSettings(db, { activeProgramId: program.id })
+    }
+  })
+}
+
+/** El programa activo es el que se entrena y el que muestra Inicio. */
+export async function setActiveProgram(db: QuitosDb, id: Id): Promise<void> {
+  await updateSettings(db, { activeProgramId: id })
+}
+
 export async function getProgram(db: QuitosDb, id: Id): Promise<Program | undefined> {
   return db.programs.get(id)
 }
@@ -44,10 +76,7 @@ export async function importProgram(db: QuitosDb, file: FileProgram, now: Date =
   return db.transaction('rw', db.exercises, db.programs, db.settings, async () => {
     const plan = buildProgram(file, await db.exercises.toArray(), now)
     await db.exercises.bulkAdd(plan.newExercises)
-    await db.programs.add(plan.program)
-    if ((await getSettings(db)).activeProgramId === undefined) {
-      await updateSettings(db, { activeProgramId: plan.program.id })
-    }
+    await addProgram(db, plan.program)
     return plan
   })
 }

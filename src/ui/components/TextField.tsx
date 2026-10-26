@@ -10,9 +10,20 @@ type TextFieldProps = {
   inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']
   /** Mensaje de error debajo del campo; el borde pasa a rojo. */
   error?: string
+  onFocus?: () => void
+  onBlur?: () => void
 }
 
-export function TextField({ label, value, onChange, placeholder, inputMode, error }: TextFieldProps) {
+export function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  inputMode,
+  error,
+  onFocus,
+  onBlur,
+}: TextFieldProps) {
   const errorId = useId()
   return (
     <label className="text-field">
@@ -25,6 +36,8 @@ export function TextField({ label, value, onChange, placeholder, inputMode, erro
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         onChange={(event) => onChange(event.target.value)}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       {error && (
         <span id={errorId} className="text-error">

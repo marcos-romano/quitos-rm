@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatCount } from '../../domain/format.ts'
 import type { ImportPlan, ParseResult } from '../../domain/programFile.ts'
 import { summarizeProgram } from '../../domain/programFile.ts'
 import { Button } from '../components/Button.tsx'
@@ -16,10 +17,6 @@ export interface ImportPreview {
 }
 
 const MAX_ERRORS = 30
-
-function count(n: number, singular: string, plural: string): string {
-  return `${n} ${n === 1 ? singular : plural}`
-}
 
 /**
  * Revisión antes de guardar (CLAUDE.md §7): muestra qué se va a cargar o, si el
@@ -91,10 +88,10 @@ export function ImportProgramScreen({
         {plan.program.description && <p className="text-secondary">{plan.program.description}</p>}
         <p className="text-body">
           {[
-            count(summary.weeks, 'semana', 'semanas'),
-            count(summary.days, 'día', 'días'),
-            count(summary.exercises, 'ejercicio', 'ejercicios'),
-            count(summary.sets, 'serie', 'series'),
+            formatCount(summary.weeks, 'semana', 'semanas'),
+            formatCount(summary.days, 'día', 'días'),
+            formatCount(summary.exercises, 'ejercicio', 'ejercicios'),
+            formatCount(summary.sets, 'serie', 'series'),
           ].join(' · ')}
         </p>
       </Section>
