@@ -28,6 +28,17 @@ export async function getMaxHistory(db: QuitosDb, exerciseId: Id): Promise<Max[]
   )
 }
 
+/** El máximo vigente de cada ejercicio que tiene alguno, en kg. Sirve para calcular todas las cargas de una vez. */
+export async function listCurrentMaxes(db: QuitosDb): Promise<Map<Id, number>> {
+  const maxes = await db.maxes.toArray()
+  maxes.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))
+  const current = new Map<Id, number>()
+  for (const max of maxes) {
+    if (!current.has(max.exerciseId)) current.set(max.exerciseId, max.kg)
+  }
+  return current
+}
+
 /** El máximo vigente: el de fecha más reciente. `undefined` si el ejercicio no tiene. */
 export async function getCurrentMax(db: QuitosDb, exerciseId: Id): Promise<Max | undefined> {
   const [current] = await getMaxHistory(db, exerciseId)

@@ -1,13 +1,22 @@
 // Formatos de la interfaz en español rioplatense (es-AR): coma decimal y fechas dd/mm/aaaa.
 
 import type { LoadResult } from './load.ts'
-import type { BlockType, LocalDate, RoundingIncrement } from './types.ts'
+import type { BlockType, Load, LocalDate, Measure, MeasureKind, RoundingIncrement } from './types.ts'
 
 const numberFormat = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 })
 
 /** Número con coma decimal y hasta dos decimales: 87.5 → "87,5", 85 → "85". */
 export function formatNumber(value: number): string {
   return numberFormat.format(value)
+}
+
+/**
+ * Número para un campo editable: con coma decimal y sin separador de miles, para
+ * que al volver a leerlo no se confunda el punto de miles con uno decimal.
+ * 1200 → "1200", 87.5 → "87,5".
+ */
+export function formatNumberForInput(value: number): string {
+  return String(value).replace('.', ',')
 }
 
 /**
@@ -31,6 +40,12 @@ export function parseWholeNumber(text: string): number | undefined {
   return value > 0 ? value : undefined
 }
 
+/** Segundos de descanso escritos por el usuario: "120" → 120. Acepta 0 (sin descanso). */
+export function parseSeconds(text: string): number | undefined {
+  const trimmed = text.trim()
+  return /^\d+$/.test(trimmed) ? Number(trimmed) : undefined
+}
+
 /** Cantidad con su palabra en singular o plural: "1 semana", "4 semanas". */
 export function formatCount(count: number, singular: string, plural: string): string {
   return `${formatNumber(count)} ${count === 1 ? singular : plural}`
@@ -48,6 +63,54 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   structure: 'Estructura',
   extra: 'Extra',
   other: 'Otro',
+}
+
+export const MEASURE_LABELS: Record<MeasureKind, string> = {
+  reps: 'Repeticiones',
+  time: 'Segundos',
+  distance: 'Metros',
+}
+
+export const LOAD_KIND_LABELS: Record<Load['kind'], string> = {
+  percent: 'Porcentaje del máximo',
+  kg: 'Kg fijos',
+  free: 'Libre',
+}
+
+/** Medida de una serie: "8 repeticiones", "1 repetición", "30 s", "15 m". */
+export function formatMeasure(measure: Measure): string {
+  const value = formatNumber(measure.value)
+  switch (measure.kind) {
+    case 'reps':
+      return `${value} ${measure.value === 1 ? 'repetición' : 'repeticiones'}`
+    case 'time':
+      return `${value} s`
+    case 'distance':
+      return `${value} m`
+  }
+}
+
+/**
+ * Una serie en pocas palabras, para listarlas una por una (nunca "4 x 8"):
+ * "8 al 65%", "8 con 20 kg", "8", "30 s", "15 m con 24 kg".
+ */
+export function formatSetShort(set: { measure: Measure; load: Load }): string {
+  const value = formatNumber(set.measure.value)
+  const measure = set.measure.kind === 'reps' ? value : formatMeasure(set.measure)
+  switch (set.load.kind) {
+    case 'percent':
+      return `${measure} al ${formatNumber(set.load.percent)}%`
+    case 'kg':
+      return `${measure} con ${formatKg(set.load.kg)}`
+    case 'free':
+      return measure
+  }
+}
+
+/** Carga de una serie con su cálculo: "65% · 22,5 kg", "20 kg", "Libre". */
+export function formatSetLoad(load: Load, result: LoadResult): string {
+  const { main } = formatLoad(result)
+  return load.kind === 'percent' ? `${formatNumber(load.percent)}% · ${main}` : main
 }
 
 /** Título de una semana, con su etiqueta entre paréntesis: "Semana 1", "Semana 1 (copia)". */

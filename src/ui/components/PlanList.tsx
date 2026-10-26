@@ -34,10 +34,11 @@ export function PlanList({
   onOpen?: (id: string) => void
   /** Sin `onMove`, no hay flechas para reordenar. */
   onMove?: (id: string, offset: -1 | 1) => void
-  onDuplicate: (id: string) => void
-  onDelete: (id: string) => void
-  deleteTitle: (item: PlanListItem) => string
-  deleteMessage: string
+  /** Sin `onDuplicate` ni `onDelete` (por ejemplo, en un buscador), no hay controles. */
+  onDuplicate?: (id: string) => void
+  onDelete?: (id: string) => void
+  deleteTitle?: (item: PlanListItem) => string
+  deleteMessage?: string
 }) {
   const [pendingDelete, setPendingDelete] = useState<PlanListItem>()
 
@@ -81,13 +82,17 @@ export function PlanList({
                       />
                     </>
                   )}
-                  <IconButton icon={Copy} label={`Duplicar ${item.title}`} onClick={() => onDuplicate(item.id)} />
-                  <IconButton
-                    icon={Trash2}
-                    label={`Eliminar ${item.title}`}
-                    destructive
-                    onClick={() => setPendingDelete(item)}
-                  />
+                  {onDuplicate && (
+                    <IconButton icon={Copy} label={`Duplicar ${item.title}`} onClick={() => onDuplicate(item.id)} />
+                  )}
+                  {onDelete && (
+                    <IconButton
+                      icon={Trash2}
+                      label={`Eliminar ${item.title}`}
+                      destructive
+                      onClick={() => setPendingDelete(item)}
+                    />
+                  )}
                 </div>
               ) : (
                 onOpen && <ChevronRight className="plan-row-chevron" size={20} strokeWidth={1.5} aria-hidden="true" />
@@ -98,11 +103,11 @@ export function PlanList({
       </ul>
       <ConfirmDialog
         open={pendingDelete !== undefined}
-        title={pendingDelete ? deleteTitle(pendingDelete) : ''}
-        message={deleteMessage}
+        title={pendingDelete && deleteTitle ? deleteTitle(pendingDelete) : ''}
+        message={deleteMessage ?? ''}
         confirmLabel="Eliminar"
         onConfirm={() => {
-          if (pendingDelete) onDelete(pendingDelete.id)
+          if (pendingDelete) onDelete?.(pendingDelete.id)
           setPendingDelete(undefined)
         }}
         onCancel={() => setPendingDelete(undefined)}

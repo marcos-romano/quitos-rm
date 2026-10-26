@@ -8,7 +8,7 @@ import type { FileProgram } from '../domain/programFile.ts'
 import type { Program, Session } from '../domain/types.ts'
 import { createDatabase, type QuitosDb } from './db.ts'
 import { createExercise, findExerciseByName, listExercises } from './exercises.ts'
-import { addMax, getCurrentMax, getMaxHistory } from './maxes.ts'
+import { addMax, getCurrentMax, getMaxHistory, listCurrentMaxes } from './maxes.ts'
 import {
   addProgram,
   changeProgram,
@@ -93,6 +93,21 @@ describe('catálogo de ejercicios', () => {
 })
 
 describe('máximos', () => {
+  test('el vigente de cada ejercicio, todos juntos', async () => {
+    const squat = await createExercise(db, { name: 'Sentadilla' })
+    const bench = await createExercise(db, { name: 'Press plano' })
+    await addMax(db, { exerciseId: squat.id, kg: 110, date: '2026-09-01' })
+    await addMax(db, { exerciseId: squat.id, kg: 120, date: '2026-10-01' })
+    await addMax(db, { exerciseId: bench.id, kg: 80, date: '2026-10-05' })
+
+    expect(await listCurrentMaxes(db)).toEqual(
+      new Map([
+        [squat.id, 120],
+        [bench.id, 80],
+      ]),
+    )
+  })
+
   test('un ejercicio sin máximos no tiene máximo actual', async () => {
     const squat = await createExercise(db, { name: 'Sentadilla' })
     expect(await getCurrentMax(db, squat.id)).toBeUndefined()

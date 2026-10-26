@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { BLOCK_TYPE_LABELS, formatRest, formatWeekTitle } from '../../../domain/format.ts'
 import { duplicateItem, moveItem, removeItem, updateDay } from '../../../domain/plan.ts'
-import type { Day, Id, Week } from '../../../domain/types.ts'
+import type { Day, Exercise, Id, Week } from '../../../domain/types.ts'
 import { AutoSaveField } from '../../components/AutoSaveField.tsx'
+import { Button } from '../../components/Button.tsx'
 import { PlanList } from '../../components/PlanList.tsx'
 import { Screen } from '../../components/Screen.tsx'
 import { Section } from '../../components/Section.tsx'
@@ -13,18 +14,22 @@ import type { ChangeProgram } from './shared.tsx'
 export function DayView({
   week,
   day,
-  exerciseNames,
+  catalog,
   editing,
   editToggle,
   onChange,
+  onOpenBlock,
+  onAddBlock,
   onBack,
 }: {
   week: Week
   day: Day
-  exerciseNames: Map<Id, string>
+  catalog: Map<Id, Exercise>
   editing: boolean
   editToggle: ReactNode
   onChange: ChangeProgram
+  onOpenBlock: (blockId: Id) => void
+  onAddBlock: () => void
   onBack: () => void
 }) {
   const path = { weekId: week.id, dayId: day.id }
@@ -56,10 +61,11 @@ export function DayView({
             id: block.id,
             title: block.name,
             subtitle: `${BLOCK_TYPE_LABELS[block.type]} · descanso ${formatRest(block.restSec)}`,
-            detail: block.exercises.map((e) => exerciseNames.get(e.exerciseId) ?? 'Ejercicio sin nombre').join(' · '),
+            detail: block.exercises.map((e) => catalog.get(e.exerciseId)?.name ?? 'Ejercicio sin nombre').join(' · '),
           }))}
           editing={editing}
           emptyText="Todavía no hay bloques."
+          onOpen={onOpenBlock}
           onMove={(blockId, offset) => onChange((p) => moveItem(p, { ...path, blockId }, offset))}
           onDuplicate={(blockId) => onChange((p) => duplicateItem(p, { ...path, blockId }))}
           onDelete={(blockId) => onChange((p) => removeItem(p, { ...path, blockId }))}
@@ -67,7 +73,9 @@ export function DayView({
           deleteMessage="Se borran sus ejercicios y series. Las sesiones ya registradas no se modifican."
         />
         {editing && (
-          <p className="text-secondary">Agregar bloques y editarlos por dentro llega en la próxima tanda.</p>
+          <Button fullWidth onClick={onAddBlock}>
+            Agregar bloque
+          </Button>
         )}
       </Section>
     </Screen>

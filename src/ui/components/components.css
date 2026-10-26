@@ -285,6 +285,26 @@ button.plan-row-main {
   text-shadow: var(--text-glow-red);
 }
 
+/* Lista desplegable: el campo de texto con una flecha a la derecha. */
+.select-wrap {
+  position: relative;
+  display: block;
+}
+
+.select-input {
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: var(--text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 /* ── Carga ───────────────────────────────────────────────────────────────── */
 
 .load-value {

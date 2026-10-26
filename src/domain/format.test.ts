@@ -7,9 +7,14 @@ import {
   formatKg,
   formatLoad,
   formatNumber,
+  formatNumberForInput,
+  formatMeasure,
   formatRest,
+  formatSetLoad,
+  formatSetShort,
   formatWeekTitle,
   parseDecimal,
+  parseSeconds,
   parseWholeNumber,
   toLocalDate,
 } from './format.ts'
@@ -110,6 +115,29 @@ describe('números enteros escritos por el usuario', () => {
   })
 })
 
+describe('números en campos editables', () => {
+  test('sin separador de miles y con coma decimal, y se vuelven a leer igual', () => {
+    for (const value of [1200, 87.5, 62.5, 8, 0.5]) {
+      const text = formatNumberForInput(value)
+      expect(text).not.toContain('.')
+      expect(parseDecimal(text)).toBe(value)
+    }
+    expect(formatNumberForInput(1200)).toBe('1200')
+    expect(formatNumberForInput(87.5)).toBe('87,5')
+  })
+})
+
+describe('segundos de descanso', () => {
+  test('acepta enteros, incluido el cero', () => {
+    expect(parseSeconds('120')).toBe(120)
+    expect(parseSeconds(' 0 ')).toBe(0)
+  })
+
+  test('rechaza decimales, letras y vacío', () => {
+    for (const text of ['90,5', '2 min', '', '-30']) expect(parseSeconds(text)).toBeUndefined()
+  })
+})
+
 describe('textos del plan', () => {
   test('cantidades en singular o plural', () => {
     expect(formatCount(1, 'semana', 'semanas')).toBe('1 semana')
@@ -122,6 +150,32 @@ describe('textos del plan', () => {
     expect(formatWeekTitle({ number: 1 })).toBe('Semana 1')
     expect(formatWeekTitle({ number: 1, label: 'copia' })).toBe('Semana 1 (copia)')
     expect(formatWeekTitle({ number: 4, label: 'Descarga' })).toBe('Semana 4 (Descarga)')
+  })
+
+  test('medida de una serie', () => {
+    expect(formatMeasure({ kind: 'reps', value: 8 })).toBe('8 repeticiones')
+    expect(formatMeasure({ kind: 'reps', value: 1 })).toBe('1 repetición')
+    expect(formatMeasure({ kind: 'time', value: 30 })).toBe('30 s')
+    expect(formatMeasure({ kind: 'distance', value: 12.5 })).toBe('12,5 m')
+  })
+
+  test('cada serie en pocas palabras, sin resumir en "N x M"', () => {
+    expect(formatSetShort({ measure: { kind: 'reps', value: 8 }, load: { kind: 'percent', percent: 65 } })).toBe('8 al 65%')
+    expect(formatSetShort({ measure: { kind: 'reps', value: 8 }, load: { kind: 'kg', kg: 20 } })).toBe('8 con 20 kg')
+    expect(formatSetShort({ measure: { kind: 'reps', value: 4 }, load: { kind: 'free' } })).toBe('4')
+    expect(formatSetShort({ measure: { kind: 'time', value: 30 }, load: { kind: 'free' } })).toBe('30 s')
+    expect(formatSetShort({ measure: { kind: 'distance', value: 15 }, load: { kind: 'kg', kg: 24 } })).toBe('15 m con 24 kg')
+    expect(formatSetShort({ measure: { kind: 'reps', value: 6 }, load: { kind: 'percent', percent: 62.5 } })).toBe(
+      '6 al 62,5%',
+    )
+  })
+
+  test('carga de una serie con su cálculo', () => {
+    const percent = { kind: 'percent', percent: 65 } as const
+    expect(formatSetLoad(percent, { status: 'calculated', kg: 22.5, exactKg: 22.75 })).toBe('65% · 22,5 kg')
+    expect(formatSetLoad(percent, { status: 'missing-max' })).toBe('65% · Falta cargar el máximo')
+    expect(formatSetLoad({ kind: 'kg', kg: 20 }, { status: 'fixed', kg: 20 })).toBe('20 kg')
+    expect(formatSetLoad({ kind: 'free' }, { status: 'free' })).toBe('Libre')
   })
 
   test('descanso en segundos', () => {
