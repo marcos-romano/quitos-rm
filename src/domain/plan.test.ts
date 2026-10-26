@@ -139,12 +139,19 @@ describe('semanas', () => {
     expect(weekNumbers(program)).toEqual([1, 3])
   })
 
-  test('la copia va al final, con el número siguiente y todo su contenido', () => {
+  test('la copia va justo después, con el mismo número, "copia" en la etiqueta y todo su contenido', () => {
     const original = sampleProgram()
     const program = duplicateItem(original, { weekId: 'w1' })
-    expect(weekNumbers(program)).toEqual([1, 2, 3, 4])
-    const copy = program.weeks[3]
+    expect(weekNumbers(program)).toEqual([1, 1, 2, 3])
+    const copy = program.weeks[1]
+    expect(copy.label).toBe('copia')
+    expect(program.weeks[0].label).toBeUndefined()
     expect(withoutIds(copy.days)).toEqual(withoutIds(original.weeks[0].days))
+  })
+
+  test('si la semana ya tenía etiqueta, la copia la conserva y suma "copia"', () => {
+    const program = updateWeek(sampleProgram(), { weekId: 'w2' }, { label: 'Descarga' })
+    expect(duplicateItem(program, { weekId: 'w2' }).weeks[2].label).toBe('Descarga, copia')
   })
 })
 

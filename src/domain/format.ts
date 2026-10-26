@@ -50,6 +50,11 @@ export const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
   other: 'Otro',
 }
 
+/** Título de una semana, con su etiqueta entre paréntesis: "Semana 1", "Semana 1 (copia)". */
+export function formatWeekTitle(week: { number: number; label?: string }): string {
+  return week.label ? `Semana ${week.number} (${week.label})` : `Semana ${week.number}`
+}
+
 /** Texto del botón del día (DISENO.md §5): "Semana 3 · Día 2". */
 export function formatDayLabel(weekNumber: number, dayName: string): string {
   return `Semana ${weekNumber} · ${dayName}`

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { formatCount, parseWholeNumber } from '../../../domain/format.ts'
+import { formatCount, formatWeekTitle, parseWholeNumber } from '../../../domain/format.ts'
 import { addDay, duplicateItem, moveItem, removeItem, updateWeek } from '../../../domain/plan.ts'
 import type { Id, Program, Week } from '../../../domain/types.ts'
 import { AutoSaveField } from '../../components/AutoSaveField.tsx'
@@ -30,12 +30,7 @@ export function WeekView({
 }) {
   const weekId = week.id
   return (
-    <Screen
-      title={`Semana ${week.number}`}
-      subtitle={[week.label, program.name].filter(Boolean).join(' · ')}
-      onBack={onBack}
-      action={editToggle}
-    >
+    <Screen title={formatWeekTitle(week)} subtitle={program.name} onBack={onBack} action={editToggle}>
       {editing && (
         <Section title="Datos de la semana">
           <AutoSaveField

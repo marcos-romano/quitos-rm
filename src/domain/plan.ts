@@ -186,10 +186,10 @@ export function removeItem(program: Program, path: PlanPath): Program {
 }
 
 /**
- * Duplica el elemento con todo lo que contiene, con ids nuevos.
- * - Semana: la copia va al final, con el número siguiente al mayor.
- * - Día y bloque: la copia va justo después, con "(copia)" en el nombre.
- * - Ejercicio y serie: la copia va justo después.
+ * Duplica el elemento con todo lo que contiene, con ids nuevos. La copia va
+ * siempre justo después del original.
+ * - Semana: mismo número y "copia" en la etiqueta, así se ve "Semana 1 (copia)".
+ * - Día y bloque: "(copia)" en el nombre.
  */
 export function duplicateItem(program: Program, path: PlanPath): Program {
   if ('setId' in path) {
@@ -210,9 +210,9 @@ export function duplicateItem(program: Program, path: PlanPath): Program {
       insertCopyAfter(days, path.dayId, (day) => ({ ...cloneDay(day), name: copyName(day.name) })),
     )
   }
-  const week = program.weeks[indexById(program.weeks, path.weekId)]
-  const copy: Week = { ...cloneWeek(week), number: nextWeekNumber(program) }
-  return { ...program, weeks: [...program.weeks, copy] }
+  return withWeeks(program, (weeks) =>
+    insertCopyAfter(weeks, path.weekId, (week) => ({ ...cloneWeek(week), label: copyLabel(week.label) })),
+  )
 }
 
 // ─── Recorrido del programa ──────────────────────────────────────────────────
@@ -302,6 +302,11 @@ function newId(): Id {
 
 function copyName(name: string): string {
   return `${name} (copia)`
+}
+
+/** Etiqueta de la copia de una semana: "copia", o "Descarga, copia" si ya tenía una. */
+function copyLabel(label: string | undefined): string {
+  return label ? `${label}, copia` : 'copia'
 }
 
 /** Saca los espacios sobrantes del nombre, si viene entre los cambios. */

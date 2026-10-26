@@ -8,6 +8,7 @@ import {
   formatLoad,
   formatNumber,
   formatRest,
+  formatWeekTitle,
   parseDecimal,
   parseWholeNumber,
   toLocalDate,
@@ -115,6 +116,12 @@ describe('textos del plan', () => {
     expect(formatCount(4, 'semana', 'semanas')).toBe('4 semanas')
     expect(formatCount(0, 'día', 'días')).toBe('0 días')
     expect(formatCount(1200, 'serie', 'series')).toBe('1.200 series')
+  })
+
+  test('título de la semana, con la etiqueta entre paréntesis', () => {
+    expect(formatWeekTitle({ number: 1 })).toBe('Semana 1')
+    expect(formatWeekTitle({ number: 1, label: 'copia' })).toBe('Semana 1 (copia)')
+    expect(formatWeekTitle({ number: 4, label: 'Descarga' })).toBe('Semana 4 (Descarga)')
   })
 
   test('descanso en segundos', () => {

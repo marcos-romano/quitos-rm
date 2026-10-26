@@ -5,14 +5,14 @@ Parte de situación para que una conversación nueva de Claude Code siga el trab
 - `CLAUDE.md`: qué es la app (especificación). `DISENO.md`: cómo se ve (fuente de verdad del diseño). Este archivo: dónde estamos, cómo se trabaja y qué sigue. No repite lo que ya dicen esos dos.
 - Se actualiza al cerrar cada tanda de trabajo y antes de terminar una conversación: secciones 1, 6 y 7, más lo que haya cambiado.
 
-**Última actualización:** 26/10/2026, al cerrar la tanda 4.4. Versión publicada: 0.10.0.
+**Última actualización:** 26/10/2026, con los ajustes de la 4.4. Versión publicada: 0.10.1.
 
 ## 1. Dónde estamos
 
-- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.10.0. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
+- **App publicada:** https://marcos-romano.github.io/quitos-rm/, versión 0.10.1. El usuario la tiene instalada en el iPhone y la actualiza con el botón "Actualizar".
 - **Versión 1, pasos 1, 2 y 3:** terminados y probados en el iPhone (fundación, modelo de datos con cálculo y base local, diseño y componentes base).
 - **Paso 4 (editor del plan):** en curso. Terminadas la 4.1 (navegación), la 4.2 (motor del plan), la 4.3 (importar el programa del entrenador, ya importado en el iPhone) y la 4.4 (pantallas de programa, semana y día). Sigue la 4.5: bloque, ejercicio y serie.
-- **A revisar por el usuario en el iPhone:** cómo se ven las pantallas nuevas de la 4.4 (filas de la lista, controles del modo "Editar", botón "Editar"/"Listo"). Cuando las apruebe, sumarlas a `DISENO.md` §5.
+- **Aprobado por el usuario:** las pantallas de la 4.4 ("están buenas"). Pidió dos ajustes, ya hechos en la 0.10.1: "Movilidad + entrada en calor" en lugar de "Preparación" y la copia de semana como "Semana 1 (copia)". Falta sumar a `DISENO.md` §5 las piezas nuevas (filas de lista, controles de "Editar", botón "Editar"/"Listo").
 
 ## 2. Cómo trabajar con el usuario
 
@@ -67,10 +67,10 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - `plan.ts`: el motor del editor. Cada función recibe un programa y devuelve uno nuevo, sin tocar el original.
     - Rutas por ids: `WeekPath`, `DayPath`, `BlockPath`, `ExercisePath` (con `blockExerciseId`, el ejercicio dentro del bloque) y `SetPath`.
     - Por nivel: `createProgram`, `updateProgram`, `duplicateProgram`, `addWeek`, `nextWeekNumber`, `updateWeek`, `addDay` (nombre "Día N"), `updateDay`, `addBlock`, `updateBlock`, `addExercise`, `updateExercise`, `addSet` (copia de la anterior; la primera usa `FIRST_SET_VALUE`: 10 repeticiones, 30 s o 15 m, con carga libre) y `updateSet`.
-    - En cualquier nivel, según la ruta: `moveItem` (-1 o +1; en los extremos no hace nada), `removeItem` y `duplicateItem`. La copia de una semana va al final con el número siguiente; la de día y bloque, justo después y con "(copia)"; la de ejercicio y serie, justo después.
+    - En cualquier nivel, según la ruta: `moveItem` (-1 o +1; en los extremos no hace nada), `removeItem` y `duplicateItem`. La copia va siempre justo después del original: la semana con el mismo número y "copia" en la etiqueta (o "Descarga, copia"); el día y el bloque con "(copia)" en el nombre.
     - Una ruta que no existe da error.
   - `load.ts`: cálculo de carga en enteros (centésimas de kg y décimas de porcentaje), con empates hacia arriba. También `resolveIncrement` y las constantes de redondeo.
-  - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza letras), `parseWholeNumber` (enteros mayores que cero), `formatCount` ("1 semana", "4 semanas"), `formatRest` ("180 s"), `BLOCK_TYPE_LABELS`, `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
+  - `format.ts`: formato es-AR. `formatNumber`, `formatKg`, `formatLoad` ("85 kg" y "84 exactos"), `parseDecimal` (acepta coma o punto y rechaza letras), `parseWholeNumber` (enteros mayores que cero), `formatCount` ("1 semana", "4 semanas"), `formatRest` ("180 s"), `formatWeekTitle` ("Semana 1 (copia)": la etiqueta va entre paréntesis en el título), `BLOCK_TYPE_LABELS`, `formatDayLabel` ("Semana 3 · Día 2"), `toLocalDate` y `formatDate`.
   - `names.ts`: limpia y normaliza nombres, sin tildes ni mayúsculas.
   - `settings.ts`: ajustes por defecto (redondeo de 2,5 kg y recordatorio a los 14 días).
   - `programFile.ts`: el archivo de programa en JSON (`format: "quitos-rm-program"`, `version: 1`), con los ejercicios por nombre y cada serie como `{ "reps" | "seconds" | "meters", "percent" | "kg", "restSec" }`.
@@ -89,7 +89,7 @@ Lo aprendido en la primera conversación. Complementa la sección 10 de `CLAUDE.
   - `screens/`: una pantalla por pestaña.
     - `HomeScreen` (título "quitos_RM") e `HistoryScreen`: textos provisorios ("Llega en el paso 6", "en el paso 7").
     - `ProgramScreen`: la pestaña Programa. Guarda dónde está el usuario (`programId`, `weekId`, `dayId`) y si está en modo "Editar". Abre cada nivel arriba de todo y, al volver, recupera la posición del nivel anterior. Si lo que se miraba deja de existir, muestra el nivel de arriba. Cada cambio pasa por `changeProgram`.
-    - `program/`: `ProgramListView` (programas, con el activo marcado con ícono y texto; "Nuevo programa" abre el programa nuevo en modo "Editar"), `ProgramView` (datos, "Usar como programa activo" y semanas), `WeekView` (número, etiqueta y días), `DayView` (nombre, preparación y bloques con sus ejercicios; los bloques todavía no se abren ni se agregan), `shared.tsx` (`EditToggle` y el tipo `ChangeProgram`) y `fields.ts` (`requireName`, `optional`).
+    - `program/`: `ProgramListView` (programas, con el activo marcado con ícono y texto; "Nuevo programa" abre el programa nuevo en modo "Editar"), `ProgramView` (datos, "Usar como programa activo" y semanas), `WeekView` (número, etiqueta y días), `DayView` (nombre, "Movilidad + entrada en calor" —el campo `prep`— y bloques con sus ejercicios; los bloques todavía no se abren ni se agregan), `shared.tsx` (`EditToggle` y el tipo `ChangeProgram`) y `fields.ts` (`requireName`, `optional`).
     - `MaxesScreen`: envuelve el panel de prueba.
     - `MoreScreen`: "Importar programa" (elige un `.json` y abre la revisión), versión, "Lista para usar sin conexión" y "Ver componentes", que abre el catálogo como pantalla interna con "←".
     - `ImportProgramScreen`: revisión antes de guardar (programa, resumen, ejercicios nuevos y existentes) o la lista de errores. Mirar no guarda nada.

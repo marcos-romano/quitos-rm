@@ -1,6 +1,6 @@
 import { CircleCheck } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { formatCount } from '../../../domain/format.ts'
+import { formatCount, formatWeekTitle } from '../../../domain/format.ts'
 import { addWeek, duplicateItem, moveItem, removeItem, updateProgram } from '../../../domain/plan.ts'
 import type { Id, Program } from '../../../domain/types.ts'
 import { AutoSaveField } from '../../components/AutoSaveField.tsx'
@@ -65,8 +65,8 @@ export function ProgramView({
         <PlanList
           items={program.weeks.map((week) => ({
             id: week.id,
-            title: `Semana ${week.number}`,
-            subtitle: [week.label, formatCount(week.days.length, 'día', 'días')].filter(Boolean).join(' · '),
+            title: formatWeekTitle(week),
+            subtitle: formatCount(week.days.length, 'día', 'días'),
           }))}
           editing={editing}
           emptyText="Todavía no hay semanas."

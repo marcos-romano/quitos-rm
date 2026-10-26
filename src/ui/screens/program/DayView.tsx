@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { BLOCK_TYPE_LABELS, formatRest } from '../../../domain/format.ts'
+import { BLOCK_TYPE_LABELS, formatRest, formatWeekTitle } from '../../../domain/format.ts'
 import { duplicateItem, moveItem, removeItem, updateDay } from '../../../domain/plan.ts'
 import type { Day, Id, Week } from '../../../domain/types.ts'
 import { AutoSaveField } from '../../components/AutoSaveField.tsx'
@@ -9,7 +9,7 @@ import { Section } from '../../components/Section.tsx'
 import { optional, requireName } from './fields.ts'
 import type { ChangeProgram } from './shared.tsx'
 
-/** Un día: su preparación y sus bloques, con los ejercicios de cada uno. */
+/** Un día: su movilidad y entrada en calor, y sus bloques con los ejercicios de cada uno. */
 export function DayView({
   week,
   day,
@@ -29,7 +29,7 @@ export function DayView({
 }) {
   const path = { weekId: week.id, dayId: day.id }
   return (
-    <Screen title={day.name} subtitle={`Semana ${week.number}`} onBack={onBack} action={editToggle}>
+    <Screen title={day.name} subtitle={formatWeekTitle(week)} onBack={onBack} action={editToggle}>
       {editing ? (
         <Section title="Datos del día">
           <AutoSaveField
@@ -39,15 +39,15 @@ export function DayView({
             onSave={(name) => onChange((p) => updateDay(p, path, { name }))}
           />
           <AutoSaveField
-            label="Preparación"
+            label="Movilidad + entrada en calor"
             value={day.prep ?? ''}
             placeholder="Opcional, por ejemplo 5' foam roll"
             onSave={(text) => onChange((p) => updateDay(p, path, { prep: optional(text) }))}
           />
         </Section>
       ) : (
-        <Section title="Preparación">
-          <p className={day.prep ? 'text-body' : 'text-secondary'}>{day.prep ?? 'Sin preparación.'}</p>
+        <Section title="Movilidad + entrada en calor">
+          <p className={day.prep ? 'text-body' : 'text-secondary'}>{day.prep ?? 'Nada cargado.'}</p>
         </Section>
       )}
       <Section title="Bloques">

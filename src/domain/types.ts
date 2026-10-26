@@ -62,7 +62,7 @@ export interface Block {
 export interface Day {
   id: Id
   name: string
-  /** Preparación previa, por ejemplo "5' foam roll, 5' movilidad, 5' flexibilidad". */
+  /** Movilidad y entrada en calor, por ejemplo "5' foam roll, 5' movilidad, 5' flexibilidad". */
   prep?: string
   blocks: Block[]
 }

@@ -1,6 +1,6 @@
 # quitos_RM: especificación de la aplicación
 
-Versión 1.2. Se sigue ajustando a medida que se toman decisiones nuevas.
+Versión 1.3. Se sigue ajustando a medida que se toman decisiones nuevas.
 
 **Estado actual y cómo retomar:** cada conversación nueva arranca con el parte de situación de `CONTEXTO.md` (dónde quedó el proyecto, qué sigue y cómo trabajar con el usuario), que se importa acá:
 
@@ -54,7 +54,7 @@ Se separa lo prescripto (el plan) de lo realizado (el registro).
 
 - **Programa**: nombre y descripción opcional. Puede haber varios (por ejemplo uno por mes); uno está activo.
 - **Semana**: número y etiqueta opcional. Pertenece a un programa.
-- **Día**: nombre (por ejemplo "Día 1"), orden y un texto libre de preparación previa (por ejemplo "5' foam roll, 5' movilidad, 5' flexibilidad").
+- **Día**: nombre (por ejemplo "Día 1"), orden y un texto libre de movilidad y entrada en calor (por ejemplo "5' foam roll, 5' movilidad, 5' flexibilidad"). En pantalla se titula "Movilidad + entrada en calor".
 - **Bloque**: nombre, tipo (potencia, fuerza, hipertrofia, estructura, extra u otro), orden y descanso por defecto en segundos, que se aplica al cerrar cada ronda.
 - **Ejercicio del bloque**: referencia al catálogo, orden y nota opcional del plan (por ejemplo una indicación técnica del entrenador), que se muestra como texto de solo lectura durante la sesión.
 - **Catálogo de ejercicios**: nombre y tipo de medida (repeticiones, tiempo o distancia). Un ejercicio puede tener un máximo asociado y, opcionalmente, un incremento de redondeo propio (sección 5).
@@ -119,7 +119,7 @@ Navegación principal con una barra inferior: Inicio, Programa, Máximos, Histor
 
 - Navegación programa > semana > día > bloque > ejercicio > series.
 - Crear, editar, duplicar, reordenar y eliminar en cada nivel. Eliminar pide confirmación.
-- Duplicar semana completa, para armar variaciones a partir de una existente.
+- Duplicar semana completa, para armar variaciones a partir de una existente. La copia va justo después de la original, con el mismo número y "copia" en la etiqueta ("Semana 1 (copia)"). Como en todos los niveles, la app nunca renumera sola.
 - Las series se agregan de a una: cada serie nueva arranca como copia de la anterior y se edita. No hay atajo "N x M".
 - Edición de cada serie por separado: medida, carga (porcentaje, kg o libre) y descanso.
 - Cada ejercicio tiene una sola nota, opcional. El plan no lleva RPE: el RPE se marca al terminar cada ejercicio durante la sesión (sección 6.3).
